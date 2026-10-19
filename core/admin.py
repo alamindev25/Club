@@ -6,8 +6,8 @@ admin.site.register([Goal, Event, PaymentAccount])
 
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ("name", "role", "sector", "phone", "email", "order")
-    list_filter = ("role", "sector")
+    list_display = ("name", "category", "role", "sector", "phone", "email", "order")
+    list_filter = ("category", "role", "sector")
     search_fields = ("name", "phone", "email", "bio", "address")
     list_editable = ("order",)
 

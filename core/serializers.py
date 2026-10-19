@@ -8,10 +8,11 @@ class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = [
-            "id", "name", "role", "phone", "email", "photo", "photo_url",
+            "id", "name", "category", "role", "phone", "email", "photo", "photo_url",
             "display_photo", "bio", "address", "sector", "order", "created_at"
         ]
         extra_kwargs = {
+            "category": {"required": False, "allow_blank": True},
             "photo": {"required": False, "allow_null": True},
             "photo_url": {"required": False, "allow_blank": True},
             "phone": {"required": False, "allow_blank": True},

@@ -1032,6 +1032,13 @@ var TABS = [
   ["ev", "কর্মসূচি ও সংস্থা"]
 ];
 
+var CATEGORIES = [
+  "কার্যনির্বাহী সদস্য",
+  "উপদেষ্টা ও সভাপতি",
+  "সাধারণ সম্পাদক ও সম্পাদকীয়",
+  "সাধারণ সদস্য"
+];
+
 var ROLES = [
   "প্রধান উপদেষ্টা", "উপদেষ্টা", "সভাপতি", "সহ-সভাপতি",
   "সাধারণ সম্পাদক", "সহ-সাধারণ সম্পাদক", "সাংগঠনিক সম্পাদক",
@@ -1175,6 +1182,7 @@ function reload() {
       return {
         id: m.id,
         n: m.name,
+        c: m.category || (m.role && (m.role.indexOf("সভাপতি") >= 0 || m.role.indexOf("উপদেষ্টা") >= 0) ? "উপদেষ্টা ও সভাপতি" : (m.role && m.role.indexOf("সম্পাদক") >= 0) ? "সাধারণ সম্পাদক ও সম্পাদকীয়" : "কার্যনির্বাহী সদস্য"),
         r: m.role || "সাধারণ সদস্য",
         p: m.phone || "",
         em: m.email || "",
@@ -1303,8 +1311,15 @@ function openAddMemberModal(editId) {
 
   var currentPic = (m && m.pic) ? m.pic : "";
   var title = isEdit ? "সদস্য তথ্য সম্পাদনা করুন" : "নতুন সদস্য যোগ করুন";
-  var curRole = m ? m.r : "সাধারণ সদস্য";
+  var curCategory = m ? (m.c || "কার্যনির্বাহী সদস্য") : "কার্যনির্বাহী সদস্য";
+  var curRole = m ? m.r : "সহ প্রচার ও প্রকাশনা সম্পাদক";
   var curSector = m ? m.s : "সমাজসেবা";
+
+  var allCategories = (function(){
+    var list = CATEGORIES.slice();
+    S.mem.forEach(function(x){ if (x.c && list.indexOf(x.c) === -1) list.push(x.c); });
+    return list;
+  })();
 
   var allRoles = (function(){
     var list = ROLES.slice();
@@ -1333,6 +1348,21 @@ function openAddMemberModal(editId) {
             '</div>' +
             '<div class="form-group">' +
               '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">' +
+                '<label>ক্যাটাগরি *</label>' +
+                '<span style="font-size:0.75rem;color:var(--primary-light);">বাছাই বা টাইপ করুন</span>' +
+              '</div>' +
+              '<select id="mf_cat_sel" onchange="syncInput(\'mf_cat\', this.value)" style="margin-bottom:6px;">' +
+                '<option value="">-- তালিকা থেকে ক্যাটাগরি বাছুন --</option>' +
+                allCategories.map(function(c){ return '<option value="' + esc(c) + '"' + (c === curCategory ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join("") +
+                '<option value="__custom__">✍️ নতুন কাস্টম ক্যাটাগরি নিজে লিখুন...</option>' +
+              '</select>' +
+              '<input id="mf_cat" value="' + esc(curCategory) + '" placeholder="যেমন: কার্যনির্বাহী সদস্য">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">' +
                 '<label>পদবী *</label>' +
                 '<span style="font-size:0.75rem;color:var(--primary-light);">বাছাই বা টাইপ করুন</span>' +
               '</div>' +
@@ -1341,8 +1371,12 @@ function openAddMemberModal(editId) {
                 allRoles.map(function(r){ return '<option value="' + esc(r) + '"' + (r === curRole ? ' selected' : '') + '>' + esc(r) + '</option>'; }).join("") +
                 '<option value="__custom__">✍️ নতুন কাস্টম পদবী নিজে লিখুন...</option>' +
               '</select>' +
-              '<input id="mf_r" value="' + esc(curRole) + '" placeholder="বা সরাসরি পদবীর নাম লিখুন (যেমন: মিডিয়া সম্পাদক)">' +
-            '<small style="color:var(--mut);display:block;margin-top:3px;font-size:0.75rem;">💡 ড্রপডাউন থেকে পদবী বাছতে পারেন অথবা বক্সে সরাসরি যেকোনো নতুন পদবী লিখে দিতে পারেন।</small>' +
+              '<input id="mf_r" value="' + esc(curRole) + '" placeholder="যেমন: সহ প্রচার ও প্রকাশনা সম্পাদক">' +
+              '<small style="color:var(--mut);display:block;margin-top:3px;font-size:0.75rem;">💡 যেকোনো কাস্টম পদবী সরাসরি বক্সে লিখে দিতে পারেন।</small>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>প্রদর্শনের ক্রম (Order / Priority)</label>' +
+              '<input id="mf_ord" type="number" value="' + (m ? m.ord : 10) + '" placeholder="১, ২, ৩... (সভাপতি সবার আগে ১)">' +
             '</div>' +
           '</div>' +
 
@@ -1394,10 +1428,7 @@ function openAddMemberModal(editId) {
             '</div>' +
           '</div>' +
 
-          '<div class="form-group">' +
-            '<label>প্রদর্শনের ক্রম (Order / Priority)</label>' +
-            '<input id="mf_ord" type="number" value="' + (m ? m.ord : 10) + '" placeholder="১, ২, ৩... (সভাপতি সবার আগে ১)">' +
-          '</div>' +
+          
 
           '<div style="display:flex;gap:12px;margin-top:10px;">' +
             '<button type="submit" class="btn g" style="flex:1;">' + (isEdit ? "হালনাগাদ করুন" : "সদস্য সংরক্ষণ করুন") + '</button>' +
@@ -1441,6 +1472,13 @@ function saveMember(e, editId) {
   var n = v("mf_n");
   if (!n) { alert("সদস্যের নাম আবশ্যক!"); return; }
 
+  var cat = v("mf_cat");
+  if (!cat) {
+    var selCat = v("mf_cat_sel");
+    if (selCat && selCat !== "__custom__") cat = selCat;
+  }
+  if (!cat) cat = "কার্যনির্বাহী সদস্য";
+
   var r = v("mf_r");
   if (!r) {
     var selR = v("mf_r_sel");
@@ -1457,6 +1495,7 @@ function saveMember(e, editId) {
 
   var fd = new FormData();
   fd.append("name", n);
+  fd.append("category", cat);
   fd.append("role", r);
   fd.append("phone", v("mf_p"));
   fd.append("email", v("mf_em"));
@@ -1501,7 +1540,8 @@ function viewMemberModal(id) {
             (m.pic ? '<img src="' + esc(m.pic) + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-family:\'Tiro Bangla\';font-size:3rem;color:var(--primary-light);">' + esc(m.n.charAt(0)) + '</span>') +
           '</div>' +
           '<h2 style="margin:0 0 6px;font-size:1.6rem;color:var(--ink-head);">' + esc(m.n) + '</h2>' +
-          '<div style="display:inline-flex;gap:6px;align-items:center;">' +
+          '<div style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">' +
+            (m.c ? '<span class="chip b">📌 ক্যাটাগরি: ' + esc(m.c) + '</span>' : '') +
             '<span class="chip b">🌿 খাত: ' + esc(m.s) + '</span>' +
           '</div>' +
         '</div>' +
@@ -1633,9 +1673,12 @@ function renderMemberCard(m) {
         ) +
         (isLead ? '<div class="member-badge-icon" title="শীর্ষ নেতৃত্ব">' + svgCrown + '</div>' : '') +
       '</div>' +
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">' +
         '<span class="member-role-badge ' + (isLead ? 'leadership' : '') + '">' + esc(m.r) + '</span>' +
-        '<span class="chip" style="font-size:0.75rem;">' + esc(m.s) + '</span>' +
+        '<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">' +
+          (m.c ? '<span class="chip" style="font-size:0.72rem;background:rgba(59,130,246,0.14);color:#60a5fa;border:1px solid rgba(59,130,246,0.28);">📌 ' + esc(m.c) + '</span>' : '') +
+          '<span class="chip" style="font-size:0.72rem;">' + esc(m.s) + '</span>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
@@ -1679,11 +1722,12 @@ function mem() {
       if (!match) return false;
     }
     if (currentFilter === "সব") return true;
-    if (currentFilter === "উপদেষ্টা ও সভাপতি") return m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0;
-    if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return m.r.indexOf("সম্পাদক") >= 0;
-    if (currentFilter === "কার্যনির্বাহী সদস্য") return m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0;
-    if (currentFilter === "সাধারণ সদস্য") return m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0;
-    return true;
+    if (m.c && m.c === currentFilter) return true;
+    if (currentFilter === "উপদেষ্টা ও সভাপতি") return (m.c && (m.c.indexOf("সভাপতি") >= 0 || m.c.indexOf("উপদেষ্টা") >= 0)) || (!m.c && (m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0));
+    if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return (m.c && m.c.indexOf("সম্পাদক") >= 0) || (!m.c && m.r.indexOf("সম্পাদক") >= 0);
+    if (currentFilter === "কার্যনির্বাহী সদস্য") return (m.c && m.c.indexOf("কার্যনির্বাহী") >= 0) || (!m.c && (m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0));
+    if (currentFilter === "সাধারণ সদস্য") return (m.c && m.c.indexOf("সাধারণ") >= 0) || (!m.c && (m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0));
+    return false;
   });
 
   return '<div class="member-header-bar">' +
@@ -1735,11 +1779,12 @@ function drawMemberGrid() {
       if (!match) return false;
     }
     if (currentFilter === "সব") return true;
-    if (currentFilter === "উপদেষ্টা ও সভাপতি") return m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0;
-    if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return m.r.indexOf("সম্পাদক") >= 0;
-    if (currentFilter === "কার্যনির্বাহী সদস্য") return m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0;
-    if (currentFilter === "সাধারণ সদস্য") return m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0;
-    return true;
+    if (m.c && m.c === currentFilter) return true;
+    if (currentFilter === "উপদেষ্টা ও সভাপতি") return (m.c && (m.c.indexOf("সভাপতি") >= 0 || m.c.indexOf("উপদেষ্টা") >= 0)) || (!m.c && (m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0));
+    if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return (m.c && m.c.indexOf("সম্পাদক") >= 0) || (!m.c && m.r.indexOf("সম্পাদক") >= 0);
+    if (currentFilter === "কার্যনির্বাহী সদস্য") return (m.c && m.c.indexOf("কার্যনির্বাহী") >= 0) || (!m.c && (m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0));
+    if (currentFilter === "সাধারণ সদস্য") return (m.c && m.c.indexOf("সাধারণ") >= 0) || (!m.c && (m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0));
+    return false;
   });
 
   el.innerHTML = filtered.length ? 
@@ -2065,11 +2110,12 @@ function adm() {
       '<button class="btn g sm" onclick="openAddMemberModal()">+ সদস্য যোগ করুন</button>' +
     '</div>' +
     '<div class="scroll"><table>' +
-      '<tr><th>ছবি</th><th>নাম</th><th>পদবী</th><th>খাত</th><th>মোবাইল</th><th>ঠিকানা</th><th>পদক্ষেপ</th></tr>' +
+      '<tr><th>ছবি</th><th>নাম</th><th>ক্যাটাগরি</th><th>পদবী</th><th>খাত</th><th>মোবাইল</th><th>ঠিকানা</th><th>পদক্ষেপ</th></tr>' +
       S.mem.map(function(m){
         return '<tr>' +
           '<td>' + (m.pic ? '<img src="' + esc(m.pic) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--primary);">' : '<div style="width:36px;height:36px;border-radius:50%;background:var(--primary-subtle);display:grid;place-items:center;color:var(--primary);font-size:0.9rem;">' + esc(m.n.charAt(0)) + '</div>') + '</td>' +
           '<td><b>' + esc(m.n) + '</b></td>' +
+          '<td><span class="chip" style="background:rgba(59,130,246,0.12);color:#60a5fa;">' + esc(m.c || "-") + '</span></td>' +
           '<td><span class="chip b">' + esc(m.r) + '</span></td>' +
           '<td>' + esc(m.s) + '</td>' +
           '<td>' + esc(m.p) + '</td>' +

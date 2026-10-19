@@ -14,6 +14,12 @@ ROLES = ch(
     "সমাজকল্যাণ সম্পাদক", "সচিবালয় সদস্য", "কার্যনির্বাহী সদস্য", 
     "সাধারণ সদস্য", "আজীবন সদস্য"
 )
+CATEGORIES = ch(
+    "উপদেষ্টা ও সভাপতি",
+    "সাধারণ সম্পাদক ও সম্পাদকীয়",
+    "কার্যনির্বাহী সদস্য",
+    "সাধারণ সদস্য"
+)
 SECTORS = ch("শিক্ষা", "স্বাস্থ্য", "ক্রীড়া", "পরিবেশ", "সমাজসেবা", "ত্রাণ ও দুর্যোগ")
 METHODS = ch("বিকাশ", "রকেট", "নগদ (Nagad)", "ব্যাংক ট্রান্সফার", "হাতে নগদ", "অন্যান্য")
 EVENT_STATUS = ch("আসন্ন", "চলমান", "সম্পন্ন")
@@ -25,6 +31,7 @@ def money():
 
 class Member(models.Model):
     name = models.CharField(max_length=120)
+    category = models.CharField(max_length=120, default="কার্যনির্বাহী সদস্য", blank=True)
     role = models.CharField(max_length=120, default="সাধারণ সদস্য")
     phone = models.CharField(max_length=30, blank=True)
     email = models.CharField(max_length=120, blank=True)
