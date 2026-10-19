@@ -13,7 +13,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from . import serializers as S
-from .models import Event, Goal, Member, Payment, PaymentAccount, Transaction
+from .models import Event, Goal, Member, Payment, PaymentAccount, Transaction, BlogPost, Alumni
 
 
 class StaffOrReadOnly(BasePermission):
@@ -127,3 +127,17 @@ class LoginView(APIView):
 def index(request):
     return FileResponse(open(settings.BASE_DIR / "frontend" / "index.html", "rb"),
                         content_type="text/html; charset=utf-8")
+
+
+class BlogPostViewSet(viewsets.ModelViewSet):
+    queryset = BlogPost.objects.all()
+    serializer_class = S.BlogPostSerializer
+    permission_classes = [StaffOrReadOnly]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
+
+class AlumniViewSet(viewsets.ModelViewSet):
+    queryset = Alumni.objects.all()
+    serializer_class = S.AlumniSerializer
+    permission_classes = [StaffOrReadOnly]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]

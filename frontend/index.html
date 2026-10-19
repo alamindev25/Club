@@ -777,6 +777,233 @@ nav button .tab-dot {
   gap: 6px;
 }
 
+/* Alumni Styles */
+.alumni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 22px;
+}
+.alumni-card {
+  background: var(--sf-card);
+  border: 1px solid var(--ln);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.alumni-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.alumni-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: var(--shadow-md), 0 0 22px var(--gold-glow);
+}
+.alumni-card:hover::before { opacity: 1; }
+
+.alumni-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.alumni-avatar-wrap {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+.alumni-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 12px var(--gold-glow);
+  background: rgba(30, 41, 59, 0.8);
+  display: grid;
+  place-items: center;
+  font-family: "Tiro Bangla", serif;
+  font-size: 1.8rem;
+  color: var(--gold-light);
+  overflow: hidden;
+}
+.alumni-role-badge {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--gold-light);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.alumni-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--ink-head);
+}
+.alumni-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.alumni-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.alumni-meta-item svg {
+  color: var(--primary-light);
+  flex-shrink: 0;
+}
+.alumni-bio-preview {
+  color: var(--mut);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin: 6px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alumni-bio-preview.empty {
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Blog Styles */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+.blog-card {
+  background: var(--sf-card);
+  border: 1px solid var(--ln);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.blog-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md), 0 0 24px var(--primary-glow);
+}
+.blog-card-media {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  background: rgba(30, 41, 59, 0.8);
+  overflow: hidden;
+}
+.blog-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.blog-card:hover .blog-cover-img {
+  transform: scale(1.05);
+}
+.blog-placeholder-img {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(30,58,138,0.3), rgba(15,23,42,0.8));
+}
+.blog-category-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  color: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.blog-card-body {
+  padding: 18px 20px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.blog-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--mut);
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+.blog-meta-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.blog-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  color: var(--ink-head);
+  transition: color 0.2s;
+}
+.blog-card:hover .blog-title {
+  color: var(--primary-light);
+}
+.blog-excerpt {
+  color: var(--ink);
+  opacity: 0.85;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.blog-card-footer {
+  padding: 12px 20px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--ln-subtle);
+  margin-top: auto;
+}
+
 /* Modals & Overlays */
 .ov {
   position: fixed;
@@ -1026,10 +1253,20 @@ setTheme(currentTheme);
 var TABS = [
   ["dash", "ড্যাশবোর্ড"],
   ["mem", "সদস্যবৃন্দ"],
+  ["alumni", "অ্যালামনাই"],
+  ["blog", "ব্লগ ও সংবাদ"],
   ["pay", "অনুদান / পেমেন্ট"],
   ["plan", "বার্ষিক পরিকল্পনা"],
   ["fin", "আর্থিক হিসাব"],
   ["ev", "কর্মসূচি ও সংস্থা"]
+];
+
+var BLOG_CATEGORIES = [
+  "সংবাদ ও নোটিশ",
+  "সমাজসেবামূলক কার্যক্রম",
+  "জরুরি ঘোষণা",
+  "সাফল্যগাঁথা ও অর্জন",
+  "সাধারণ ব্লগ"
 ];
 
 var CATEGORIES = [
@@ -1062,7 +1299,12 @@ function seed() {
     fs: "সব",
     memSearch: "",
     memRoleFilter: "সব",
+    alumniSearch: "",
+    blogSearch: "",
+    blogCategoryFilter: "সব",
     mem: [],
+    alumni: [],
+    blog: [],
     plan: [],
     tx: [],
     ev: [],
@@ -1171,7 +1413,9 @@ function reload() {
     api("GET", "goals/"),
     api("GET", "events/"),
     api("GET", "summary/"),
-    api("GET", "settings/")
+    api("GET", "settings/"),
+    api("GET", "alumni/"),
+    api("GET", "posts/")
   ];
   if (ADMIN) {
     P.push(api("GET", "admin/payments/"), api("GET", "admin/transactions/"));
@@ -1203,11 +1447,41 @@ function reload() {
     S.sum = r[3] || { income: 0, expense: 0, by_event: {} };
     S.acc = { b: r[4].bkash, r: r[4].rocket, n: r[4].nagad, k: r[4].bank };
 
-    if (ADMIN && r[5] && r[6]) {
-      S.pay = r[5].map(function(p){
+    S.alumni = (r[5] || []).map(function(a){
+      return {
+        id: a.id,
+        name: a.name,
+        former_role: a.former_role || "",
+        job_title: a.job_title || "",
+        education: a.education || "",
+        phone: a.phone || "",
+        email: a.email || "",
+        bio: a.bio || "",
+        profile_link: a.profile_link || "",
+        order: a.order || 10,
+        pic: a.display_photo || a.photo_url || a.photo || "",
+        created_at: a.created_at
+      };
+    });
+
+    S.blog = (r[6] || []).map(function(b){
+      return {
+        id: b.id,
+        title: b.title,
+        category: b.category || "সংবাদ ও নোটিশ",
+        author: b.author || "অ্যাডমিন",
+        content: b.content || "",
+        pic: b.display_photo || b.photo_url || b.photo || "",
+        created_at: b.created_at,
+        updated_at: b.updated_at
+      };
+    });
+
+    if (ADMIN && r[7] && r[8]) {
+      S.pay = r[7].map(function(p){
         return { id: p.id, w: p.name, pf: p.profession, ph: p.phone, m: p.method, trx: p.trx_id, a: Number(p.amount), d: p.created_at, n: p.note };
       });
-      S.tx = r[6].map(function(t){
+      S.tx = r[8].map(function(t){
         return { id: t.id, k: t.kind, w: t.donor_name, pf: t.profession, ph: t.phone, src: t.method, a: Number(t.amount), d: t.paid_at, n: t.note, ev: t.event };
       });
     } else {
@@ -1242,7 +1516,7 @@ function go(t) {
 function del(l, id, name) {
   if (!ADMIN) return;
   if (!confirm("আপনি কি নিশ্চিতভাবে " + (name ? '"' + name + '"' : "এটি") + " মুছে ফেলতে চান?")) return;
-  var u = { mem: "members", plan: "goals", ev: "events", tx: "admin/transactions" }[l];
+  var u = { mem: "members", plan: "goals", ev: "events", tx: "admin/transactions", alumni: "alumni", blog: "posts" }[l];
   api("DELETE", u + "/" + id + "/").then(reload).catch(fail);
 }
 
@@ -1451,11 +1725,12 @@ function syncInput(targetId, val) {
   }
 }
 
-function previewUpload(input) {
+function previewUpload(input, targetId) {
+  var tid = targetId || "mf_prev";
   if (input.files && input.files[0]) {
     var reader = new FileReader();
     reader.onload = function(e) {
-      var prev = document.getElementById("mf_prev");
+      var prev = document.getElementById(tid);
       if (prev) {
         prev.src = e.target.result;
         prev.style.display = "block";
@@ -1571,6 +1846,12 @@ function viewMemberModal(id) {
 /* ==============================================================
    SVG ICONS (Clean, sharp, cross-platform)
    ============================================================== */
+var svgBriefcase = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+var svgGraduation = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>';
+var svgExternal = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+var svgArticle = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+var svgCalendar = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+var svgUser = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
 var svgPhone = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
 var svgMail = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>';
 var svgEdit = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1657,6 +1938,53 @@ function dash() {
     '</div>' +
     '<div class="member-grid">' +
       (S.mem.slice(0, 3).map(function(m){ return renderMemberCard(m); }).join("") || '<p class="mut">কোনো সদস্য পাওয়া যায়নি।</p>') +
+    '</div>' +
+  '</div>' +
+
+  /* Dashboard Blog & Alumni Previews */
+  '<div class="two" style="margin-top:28px;">' +
+    '<div class="box">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+        '<h3 style="margin:0;font-size:1.2rem;">📰 সাম্প্রতিক ব্লগ ও সংবাদ</h3>' +
+        '<button class="btn sm" onclick="go(\'blog\')">সকল পোস্ট &rarr;</button>' +
+      '</div>' +
+      (S.blog.length ?
+        '<div style="display:grid;gap:12px;">' +
+          S.blog.slice(0, 2).map(function(b){
+            return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln-subtle);cursor:pointer;" onclick="viewBlogModal(' + b.id + ')">' +
+              (b.pic ? '<img src="' + esc(b.pic) + '" style="width:72px;height:52px;border-radius:6px;object-fit:cover;flex-shrink:0;">' : '<div style="width:72px;height:52px;border-radius:6px;background:var(--sf-glass);display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;">📰</div>') +
+              '<div style="flex:1;min-width:0;">' +
+                '<span class="chip b" style="font-size:0.7rem;padding:2px 6px;">' + esc(b.category) + '</span>' +
+                '<h4 style="margin:4px 0 2px;font-size:0.95rem;color:var(--ink-head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(b.title) + '</h4>' +
+                '<div style="font-size:0.78rem;color:var(--mut);">' + dt(b.created_at) + ' &bull; ' + esc(b.author || 'অ্যাডমিন') + '</div>' +
+              '</div>' +
+            '</div>';
+          }).join("") +
+        '</div>' :
+        '<p style="color:var(--mut);margin:0;">বর্তমানে কোনো নতুন পোস্ট নেই।</p>'
+      ) +
+    '</div>' +
+
+    '<div class="box">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+        '<h3 style="margin:0;font-size:1.2rem;">🎓 আমাদের কৃতি অ্যালামনাই</h3>' +
+        '<button class="btn sm" onclick="go(\'alumni\')">সকল অ্যালামনাই &rarr;</button>' +
+      '</div>' +
+      (S.alumni.length ?
+        '<div style="display:grid;gap:12px;">' +
+          S.alumni.slice(0, 2).map(function(a){
+            return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln-subtle);cursor:pointer;" onclick="viewAlumniModal(' + a.id + ')">' +
+              (a.pic ? '<img src="' + esc(a.pic) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0;">' : '<div style="width:48px;height:48px;border-radius:50%;background:rgba(245,158,11,0.15);color:var(--gold-light);display:grid;place-items:center;font-size:1.2rem;border:2px solid var(--gold);flex-shrink:0;">' + esc(a.name.charAt(0)) + '</div>') +
+              '<div style="flex:1;min-width:0;">' +
+                '<h4 style="margin:0 0 2px;font-size:0.98rem;color:var(--ink-head);">' + esc(a.name) + '</h4>' +
+                '<div style="font-size:0.8rem;color:var(--gold-light);font-weight:600;">' + esc(a.former_role || 'সম্মানিত অ্যালামনাই') + '</div>' +
+                (a.job_title ? '<div style="font-size:0.78rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(a.job_title) + '</div>' : '') +
+              '</div>' +
+            '</div>';
+          }).join("") +
+        '</div>' :
+        '<p style="color:var(--mut);margin:0;">বর্তমানে কোনো অ্যালামনাই তালিকাভুক্ত নেই।</p>'
+      ) +
     '</div>' +
   '</div>';
 }
@@ -2061,6 +2389,553 @@ function addEv() {
   post("events/", { title: t, organization: v("eo"), date: v("ed") || null, status: v("es") });
 }
 
+
+/* ==============================================================
+   ALUMNI SECTION & MODALS
+   ============================================================== */
+function alumni() {
+  var search = (S.alumniSearch || "").toLowerCase();
+  var filtered = S.alumni.filter(function(a){
+    if (!search) return true;
+    return (a.name && a.name.toLowerCase().indexOf(search) >= 0) ||
+           (a.former_role && a.former_role.toLowerCase().indexOf(search) >= 0) ||
+           (a.job_title && a.job_title.toLowerCase().indexOf(search) >= 0) ||
+           (a.education && a.education.toLowerCase().indexOf(search) >= 0) ||
+           (a.bio && a.bio.toLowerCase().indexOf(search) >= 0) ||
+           (a.phone && a.phone.indexOf(search) >= 0);
+  });
+
+  return '<div class="member-header-bar">' +
+    '<div>' +
+      '<h2 style="margin:0 0 4px;font-size:1.8rem;">🎓 আমাদের অ্যালামনাই ও প্রাক্তন সদস্যবৃন্দ</h2>' +
+      '<p style="margin:0;color:var(--mut);">সংগঠনের গৌরবময় ঐতিহ্য — অতীতের চালিকাশক্তি, আজ দেশ-বিদেশে প্রতিষ্ঠিত গুণীজন</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;align-items:center;">' +
+      '<div class="member-search-box">' +
+        '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>' +
+        '<input placeholder="নাম, সাবেক পদবী, বর্তমান চাকরি বা শিক্ষা দিয়ে খুঁজুন..." value="' + esc(S.alumniSearch || "") + '" oninput="S.alumniSearch=this.value;drawAlumniGrid()">' +
+      '</div>' +
+      (ADMIN ? '<button class="btn g" onclick="openAddAlumniModal()">+ নতুন অ্যালামনাই যোগ করুন</button>' : '') +
+    '</div>' +
+  '</div>' +
+
+  '<div id="alumni-grid-wrap">' +
+    (filtered.length ?
+      '<div class="alumni-grid">' + filtered.map(function(a){ return renderAlumniCard(a); }).join("") + '</div>' :
+      '<div class="box" style="text-align:center;padding:48px 20px;">' +
+        '<div style="font-size:3rem;margin-bottom:12px;">🎓</div>' +
+        '<h3 style="margin:0 0 8px;">কোনো অ্যালামনাই পাওয়া যায়নি</h3>' +
+        '<p style="color:var(--mut);margin:0 0 16px;">আপনার অনুসন্ধানের সাথে মিলে এমন কোনো অ্যালামনাই তালিকাভুক্ত নেই।</p>' +
+        (ADMIN ? '<button class="btn g" onclick="openAddAlumniModal()">নতুন অ্যালামনাই যোগ করুন</button>' : '') +
+      '</div>'
+    ) +
+  '</div>';
+}
+
+function drawAlumniGrid() {
+  var el = document.getElementById("alumni-grid-wrap");
+  if (!el) { draw(); return; }
+  var search = (S.alumniSearch || "").toLowerCase();
+  var filtered = S.alumni.filter(function(a){
+    if (!search) return true;
+    return (a.name && a.name.toLowerCase().indexOf(search) >= 0) ||
+           (a.former_role && a.former_role.toLowerCase().indexOf(search) >= 0) ||
+           (a.job_title && a.job_title.toLowerCase().indexOf(search) >= 0) ||
+           (a.education && a.education.toLowerCase().indexOf(search) >= 0) ||
+           (a.bio && a.bio.toLowerCase().indexOf(search) >= 0) ||
+           (a.phone && a.phone.indexOf(search) >= 0);
+  });
+  el.innerHTML = filtered.length ?
+    '<div class="alumni-grid">' + filtered.map(function(a){ return renderAlumniCard(a); }).join("") + '</div>' :
+    '<div class="box" style="text-align:center;padding:48px 20px;"><div style="font-size:3rem;margin-bottom:12px;">🎓</div><h3 style="margin:0 0 8px;">কোনো অ্যালামনাই পাওয়া যায়নি</h3><p style="color:var(--mut);margin:0 0 16px;">আপনার অনুসন্ধানের সাথে মিলে এমন কোনো অ্যালামনাই তালিকাভুক্ত নেই।</p>' + (ADMIN ? '<button class="btn g" onclick="openAddAlumniModal()">নতুন অ্যালামনাই যোগ করুন</button>' : '') + '</div>';
+}
+
+function renderAlumniCard(a) {
+  return '<div class="alumni-card">' +
+    '<div class="alumni-top-row">' +
+      '<div class="alumni-avatar-wrap" onclick="viewAlumniModal(' + a.id + ')" style="cursor:pointer;" title="প্রোফাইল দেখতে ক্লিক করুন">' +
+        (a.pic ?
+          '<img src="' + esc(a.pic) + '" alt="' + esc(a.name) + '" class="alumni-avatar" onerror="this.onerror=null;this.parentElement.innerHTML=\'<div class=\\\'alumni-avatar\\\'>' + esc(a.name.charAt(0)) + '</div>\'">' :
+          '<div class="alumni-avatar">' + esc(a.name.charAt(0)) + '</div>'
+        ) +
+      '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<span class="alumni-role-badge" title="সাবেক পদবী / ব্যাচ">' + esc(a.former_role || "সম্মানিত অ্যালামনাই") + '</span>' +
+        '<h4 class="alumni-name" onclick="viewAlumniModal(' + a.id + ')" style="cursor:pointer;" title="' + esc(a.name) + '">' + esc(a.name) + '</h4>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="alumni-card-body">' +
+      (a.job_title ? '<div class="alumni-meta-item" title="বর্তমান পেশা ও পদবী">' + svgBriefcase + ' <span>' + esc(a.job_title) + '</span></div>' : '') +
+      (a.education ? '<div class="alumni-meta-item" title="শিক্ষাগত যোগ্যতা">' + svgGraduation + ' <span>' + esc(a.education) + '</span></div>' : '') +
+      '<p class="alumni-bio-preview ' + (a.bio ? '' : 'empty') + '" onclick="viewAlumniModal(' + a.id + ')" style="cursor:pointer;">' +
+        (a.bio ? esc(a.bio) : 'বিস্তারিত প্রোফাইল ও স্মৃতিচারণ দেখতে ক্লিক করুন...') +
+      '</p>' +
+    '</div>' +
+
+    '<div class="member-card-footer">' +
+      '<div class="member-contact-btns">' +
+        '<button class="btn sm" onclick="viewAlumniModal(' + a.id + ')">প্রোফাইল</button>' +
+        (a.profile_link ? '<a href="' + esc(a.profile_link) + '" target="_blank" rel="noopener noreferrer" class="icon-btn" title="অনলাইন প্রোফাইল লিঙ্ক">' + svgExternal + '</a>' : '') +
+        (a.email ? '<a href="mailto:' + esc(a.email) + '" class="icon-btn" title="ইমেইল: ' + esc(a.email) + '">' + svgMail + '</a>' : '') +
+        (a.phone ?
+          '<a href="tel:' + esc(a.phone) + '" class="icon-btn" style="color:var(--ac);border-color:rgba(16,185,129,0.35);" title="কল করুন: ' + esc(a.phone) + '">' + svgPhone + '</a>' : ''
+        ) +
+      '</div>' +
+      (ADMIN ? '<div class="member-admin-actions" style="display:flex;gap:6px;align-items:center;">' +
+        '<button class="btn sm" onclick="openAddAlumniModal(' + a.id + ')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:0.8rem;background:var(--primary-subtle);color:var(--primary);border:1px solid var(--primary);border-radius:4px;font-weight:600;" title="অ্যালামনাই তথ্য সম্পাদনা করুন">' + svgEdit + ' সম্পাদনা</button>' +
+        '<button class="icon-btn" style="color:var(--rd);padding:4px 6px;" onclick="del(\'alumni\',' + a.id + ',\'' + esc(a.name) + '\')" title="মুছুন">' + svgTrash + '</button>' +
+      '</div>' : '') +
+    '</div>' +
+  '</div>';
+}
+
+function viewAlumniModal(id) {
+  var a = S.alumni.find(function(x){ return x.id === id; });
+  if (!a) return;
+
+  document.getElementById("md").innerHTML =
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:540px;">' +
+        '<div class="modal-head">' +
+          '<div class="alumni-role-badge">' + esc(a.former_role || "সম্মানিত অ্যালামনাই") + '</div>' +
+          '<button class="modal-close" onclick="cls()">&times;</button>' +
+        '</div>' +
+        '<div style="text-align:center;margin-bottom:20px;">' +
+          '<div style="width:110px;height:110px;margin:0 auto 14px;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 25px var(--gold-glow);overflow:hidden;background:rgba(30,41,59,0.8);display:grid;place-items:center;">' +
+            (a.pic ? '<img src="' + esc(a.pic) + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-family:\'Tiro Bangla\';font-size:3rem;color:var(--gold-light);">' + esc(a.name.charAt(0)) + '</span>') +
+          '</div>' +
+          '<h2 style="margin:0 0 6px;font-size:1.6rem;color:var(--ink-head);">' + esc(a.name) + '</h2>' +
+          (a.former_role ? '<div style="color:var(--gold-light);font-size:0.95rem;font-weight:600;margin-bottom:6px;">' + esc(a.former_role) + '</div>' : '') +
+        '</div>' +
+
+        '<div style="display:grid;gap:12px;margin-bottom:18px;">' +
+          (a.job_title ?
+            '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+              '<div style="color:var(--primary-light);">' + svgBriefcase + '</div>' +
+              '<div><div style="font-size:0.75rem;color:var(--mut);">বর্তমান পেশা ও প্রতিষ্ঠান (Job Title)</div><b style="color:var(--ink-head);">' + esc(a.job_title) + '</b></div>' +
+            '</div>' : '') +
+          (a.education ?
+            '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+              '<div style="color:var(--primary-light);">' + svgGraduation + '</div>' +
+              '<div><div style="font-size:0.75rem;color:var(--mut);">শিক্ষাগত যোগ্যতা ও প্রতিষ্ঠান (Education)</div><b style="color:var(--ink-head);">' + esc(a.education) + '</b></div>' +
+            '</div>' : '') +
+          (a.phone ?
+            '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">' +
+              '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="color:var(--ac);">' + svgPhone + '</div>' +
+                '<div><div style="font-size:0.75rem;color:var(--mut);">মোবাইল নম্বর</div><b>' + esc(a.phone) + '</b></div>' +
+              '</div>' +
+              '<a href="tel:' + esc(a.phone) + '" class="btn sm g" style="text-decoration:none;">কল করুন</a>' +
+            '</div>' : '') +
+          (a.email ?
+            '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">' +
+              '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="color:var(--primary-light);">' + svgMail + '</div>' +
+                '<div><div style="font-size:0.75rem;color:var(--mut);">ইমেইল এড্রেস</div><b>' + esc(a.email) + '</b></div>' +
+              '</div>' +
+              '<a href="mailto:' + esc(a.email) + '" class="btn sm" style="text-decoration:none;">ইমেইল</a>' +
+            '</div>' : '') +
+          (a.profile_link ?
+            '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">' +
+              '<div style="display:flex;align-items:center;gap:12px;">' +
+                '<div style="color:var(--primary-light);">' + svgExternal + '</div>' +
+                '<div><div style="font-size:0.75rem;color:var(--mut);">অনলাইন প্রোফাইল লিংক</div><a href="' + esc(a.profile_link) + '" target="_blank" rel="noopener noreferrer" style="color:var(--primary-light);word-break:break-all;">' + esc(a.profile_link) + '</a></div>' +
+              '</div>' +
+              '<a href="' + esc(a.profile_link) + '" target="_blank" rel="noopener noreferrer" class="btn sm" style="text-decoration:none;">প্রোফাইল দেখুন &rarr;</a>' +
+            '</div>' : '') +
+        '</div>' +
+
+        (a.bio ?
+          '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:16px;margin-bottom:18px;">' +
+            '<h4 style="margin:0 0 8px;color:var(--primary-light);font-size:1rem;">পরিচিতি ও স্মৃতিচারণ</h4>' +
+            '<p style="margin:0;color:var(--ink);line-height:1.65;white-space:pre-line;">' + esc(a.bio) + '</p>' +
+          '</div>' : '') +
+
+        '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+          (ADMIN ? '<button class="btn" onclick="cls();openAddAlumniModal(' + a.id + ')">' + svgEdit + ' তথ্য সম্পাদনা</button>' : '') +
+          '<button class="btn g" onclick="cls()">বন্ধ করুন</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function openAddAlumniModal(editId) {
+  if (!ADMIN) return;
+  var isEdit = !!editId;
+  var a = isEdit ? S.alumni.find(function(x){ return x.id === editId; }) : null;
+  var currentPic = a ? a.pic : "";
+
+  document.getElementById("md").innerHTML =
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:560px;">' +
+        '<div class="modal-head">' +
+          '<h3 style="margin:0;font-size:1.35rem;">' + (isEdit ? '🎓 অ্যালামনাই তথ্য সম্পাদনা' : '🎓 নতুন অ্যালামনাই যোগ করুন') + '</h3>' +
+          '<button class="modal-close" onclick="cls()">&times;</button>' +
+        '</div>' +
+        '<p style="color:var(--mut);font-size:0.88rem;margin:-10px 0 16px;">সংগঠনের প্রাক্তন সদস্য বা অ্যালামনাইদের তথ্য, সাবেক পদবী, বর্তমান কর্মসংস্থান ও প্রোফাইল যুক্ত করুন।</p>' +
+
+        '<form id="alumniForm" onsubmit="saveAlumni(event, ' + (isEdit ? editId : 'null') + ')" class="form-grid">' +
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label>অ্যালামনাইর নাম *</label>' +
+              '<input id="af_name" value="' + esc(a ? a.name : "") + '" placeholder="যেমন: ড. মো: আরিফুল ইসলাম" required>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>সাবেক পদবী / দায়িত্ব / ব্যাচ</label>' +
+              '<input id="af_former_role" value="' + esc(a ? a.former_role : "") + '" placeholder="যেমন: সাবেক সভাপতি (২০১৮-২০২০)">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label>বর্তমান পেশা ও পদবী (Job Title)</label>' +
+              '<input id="af_job_title" value="' + esc(a ? a.job_title : "") + '" placeholder="যেমন: সিনিয়র সফটওয়্যার ইঞ্জিনিয়ার, গুগল">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>শিক্ষাগত যোগ্যতা / প্রতিষ্ঠান (Education)</label>' +
+              '<input id="af_education" value="' + esc(a ? a.education : "") + '" placeholder="যেমন: বিএসসি (সিএসই), বুয়েট">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label>মোবাইল নম্বর</label>' +
+              '<input id="af_phone" value="' + esc(a ? a.phone : "") + '" placeholder="017xxxxxxxx">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>ইমেইল এড্রেস</label>' +
+              '<input id="af_email" type="email" value="' + esc(a ? a.email : "") + '" placeholder="example@gmail.com">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label>প্রোফাইল পেজ লিংক (LinkedIn / Facebook / Web)</label>' +
+              '<input id="af_profile_link" type="url" value="' + esc(a ? a.profile_link : "") + '" placeholder="https://linkedin.com/in/...">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>প্রদর্শনের ক্রম (Order / Priority)</label>' +
+              '<input id="af_order" type="number" value="' + (a ? a.order : 10) + '" placeholder="১, ২, ৩...">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-group">' +
+            '<label>অ্যালামনাইর ছবি (Photo)</label>' +
+            '<div class="upload-zone" onclick="document.getElementById(\'af_file\').click()">' +
+              (currentPic ? '<img src="' + esc(currentPic) + '" id="af_prev" class="upload-preview-img">' : '<div id="af_prev" class="upload-preview-img" style="display:none;"></div>') +
+              '<div style="font-size:0.9rem;color:var(--primary-light);font-weight:600;">📁 কম্পিউটার/ফোন থেকে ছবি নির্বাচন করুন</div>' +
+              '<small style="color:var(--mut);">JPG, PNG বা WEBP ছবি নির্বাচন করতে এখানে চাপুন</small>' +
+              '<input type="file" id="af_file" accept="image/*" onchange="previewUpload(this, \'af_prev\')">' +
+            '</div>' +
+            '<div style="margin-top:6px;">' +
+              '<input id="af_url" value="' + esc(a ? a.pic : "") + '" placeholder="অথবা সরাসরি ছবির অনলাইন লিংক (Image URL) দিন">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-group">' +
+            '<label>সংক্ষিপ্ত পরিচিতি ও স্মৃতিচারণ (Bio / Memories)</label>' +
+            '<textarea id="af_bio" placeholder="সংগঠনে তাঁর অবদান, স্মৃতি এবং বর্তমান কার্যক্রম সম্পর্কে লিখুন...">' + esc(a ? a.bio : "") + '</textarea>' +
+          '</div>' +
+
+          '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">' +
+            '<button type="button" class="btn" onclick="cls()">বাতিল</button>' +
+            '<button type="submit" class="btn g">✓ ' + (isEdit ? 'হালনাগাদ সংরক্ষণ করুন' : 'অ্যালামনাই সংরক্ষণ করুন') + '</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>' +
+    '</div>';
+}
+
+function saveAlumni(e, editId) {
+  e.preventDefault();
+  if (!ADMIN) return;
+
+  var n = v("af_name");
+  if (!n) { alert("অ্যালামনাইর নাম আবশ্যক!"); return; }
+
+  var fd = new FormData();
+  fd.append("name", n);
+  fd.append("former_role", v("af_former_role"));
+  fd.append("job_title", v("af_job_title"));
+  fd.append("education", v("af_education"));
+  fd.append("phone", v("af_phone"));
+  fd.append("email", v("af_email"));
+  fd.append("profile_link", v("af_profile_link"));
+  fd.append("order", v("af_order") || "10");
+  fd.append("bio", v("af_bio"));
+
+  var urlVal = v("af_url");
+  if (urlVal) fd.append("photo_url", urlVal);
+
+  var fileInput = document.getElementById("af_file");
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    fd.append("photo", fileInput.files[0]);
+  }
+
+  var method = editId ? "PATCH" : "POST";
+  var endpoint = editId ? "alumni/" + editId + "/" : "alumni/";
+
+  api(method, endpoint, fd, true).then(function(){
+    cls();
+    reload();
+  }).catch(fail);
+}
+
+/* ==============================================================
+   BLOG & POSTS SECTION & MODALS
+   ============================================================== */
+function blog() {
+  var catFilter = S.blogCategoryFilter || "সব";
+  var search = (S.blogSearch || "").toLowerCase();
+  var catOptions = ["সব"].concat(BLOG_CATEGORIES);
+
+  var filtered = S.blog.filter(function(b){
+    if (search) {
+      var match = (b.title && b.title.toLowerCase().indexOf(search) >= 0) ||
+                  (b.content && b.content.toLowerCase().indexOf(search) >= 0) ||
+                  (b.author && b.author.toLowerCase().indexOf(search) >= 0) ||
+                  (b.category && b.category.toLowerCase().indexOf(search) >= 0);
+      if (!match) return false;
+    }
+    if (catFilter !== "সব" && b.category !== catFilter) return false;
+    return true;
+  });
+
+  return '<div class="member-header-bar">' +
+    '<div>' +
+      '<h2 style="margin:0 0 4px;font-size:1.8rem;">📰 ব্লগ, সংবাদ ও নোটিশ</h2>' +
+      '<p style="margin:0;color:var(--mut);">সংগঠনের সাম্প্রতিক খবরাখবর, মানবিক উদ্যোগ ও গুরুত্বপূর্ণ নোটিশসমূহ</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;align-items:center;">' +
+      '<div class="member-search-box">' +
+        '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>' +
+        '<input placeholder="পোস্টের শিরোনাম বা বিষয় খুঁজুন..." value="' + esc(S.blogSearch || "") + '" oninput="S.blogSearch=this.value;drawBlogGrid()">' +
+      '</div>' +
+      (ADMIN ? '<button class="btn g" onclick="openAddBlogModal()">+ নতুন পোস্ট লিখুন</button>' : '') +
+    '</div>' +
+  '</div>' +
+
+  '<div class="member-filter-pills">' +
+    catOptions.map(function(cf){
+      return '<button aria-pressed="' + (catFilter === cf) + '" onclick="S.blogCategoryFilter=\'' + cf + '\';draw()">' + cf + '</button>';
+    }).join("") +
+  '</div>' +
+
+  '<div id="blog-grid-wrap">' +
+    (filtered.length ?
+      '<div class="blog-grid">' + filtered.map(function(b){ return renderBlogCard(b); }).join("") + '</div>' :
+      '<div class="box" style="text-align:center;padding:48px 20px;">' +
+        '<div style="font-size:3rem;margin-bottom:12px;">📰</div>' +
+        '<h3 style="margin:0 0 8px;">কোনো পোস্ট পাওয়া যায়নি</h3>' +
+        '<p style="color:var(--mut);margin:0 0 16px;">এখনো কোনো ব্লগ বা সংবাদ পোস্ট প্রকাশিত হয়নি।</p>' +
+        (ADMIN ? '<button class="btn g" onclick="openAddBlogModal()">নতুন পোস্ট তৈরি করুন</button>' : '') +
+      '</div>'
+    ) +
+  '</div>';
+}
+
+function drawBlogGrid() {
+  var el = document.getElementById("blog-grid-wrap");
+  if (!el) { draw(); return; }
+  var catFilter = S.blogCategoryFilter || "সব";
+  var search = (S.blogSearch || "").toLowerCase();
+  var filtered = S.blog.filter(function(b){
+    if (search) {
+      var match = (b.title && b.title.toLowerCase().indexOf(search) >= 0) ||
+                  (b.content && b.content.toLowerCase().indexOf(search) >= 0) ||
+                  (b.author && b.author.toLowerCase().indexOf(search) >= 0) ||
+                  (b.category && b.category.toLowerCase().indexOf(search) >= 0);
+      if (!match) return false;
+    }
+    if (catFilter !== "সব" && b.category !== catFilter) return false;
+    return true;
+  });
+  el.innerHTML = filtered.length ?
+    '<div class="blog-grid">' + filtered.map(function(b){ return renderBlogCard(b); }).join("") + '</div>' :
+    '<div class="box" style="text-align:center;padding:48px 20px;"><div style="font-size:3rem;margin-bottom:12px;">📰</div><h3 style="margin:0 0 8px;">কোনো পোস্ট পাওয়া যায়নি</h3><p style="color:var(--mut);margin:0 0 16px;">এখনো কোনো ব্লগ বা সংবাদ পোস্ট প্রকাশিত হয়নি।</p>' + (ADMIN ? '<button class="btn g" onclick="openAddBlogModal()">নতুন পোস্ট তৈরি করুন</button>' : '') + '</div>';
+}
+
+function renderBlogCard(b) {
+  var snippet = (b.content || "").replace(/<[^>]*>?/gm, "");
+  if (snippet.length > 140) snippet = snippet.slice(0, 140) + "...";
+
+  return '<div class="blog-card">' +
+    '<div class="blog-card-media" onclick="viewBlogModal(' + b.id + ')" style="cursor:pointer;">' +
+      (b.pic ?
+        '<img src="' + esc(b.pic) + '" alt="' + esc(b.title) + '" class="blog-cover-img">' :
+        '<div class="blog-placeholder-img">' +
+          '<span style="font-size:2.8rem;opacity:0.85;">📰</span>' +
+        '</div>'
+      ) +
+      '<span class="blog-category-tag">' + esc(b.category) + '</span>' +
+    '</div>' +
+
+    '<div class="blog-card-body">' +
+      '<div class="blog-meta-row">' +
+        '<span>' + svgCalendar + ' ' + dt(b.created_at) + '</span>' +
+        '<span>' + svgUser + ' ' + esc(b.author || "অ্যাডমিন") + '</span>' +
+      '</div>' +
+      '<h3 class="blog-title" onclick="viewBlogModal(' + b.id + ')" style="cursor:pointer;" title="' + esc(b.title) + '">' + esc(b.title) + '</h3>' +
+      '<p class="blog-excerpt" onclick="viewBlogModal(' + b.id + ')" style="cursor:pointer;">' + esc(snippet || "বিস্তারিত পড়তে ক্লিক করুন...") + '</p>' +
+    '</div>' +
+
+    '<div class="blog-card-footer">' +
+      '<button class="btn sm" onclick="viewBlogModal(' + b.id + ')" style="display:inline-flex;align-items:center;gap:6px;">' + svgArticle + ' বিস্তারিত পড়ুন &rarr;</button>' +
+      (ADMIN ? '<div style="display:flex;gap:6px;align-items:center;">' +
+        '<button class="btn sm" onclick="openAddBlogModal(' + b.id + ')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:0.8rem;background:var(--primary-subtle);color:var(--primary);border:1px solid var(--primary);border-radius:4px;font-weight:600;">' + svgEdit + ' সম্পাদনা</button>' +
+        '<button class="icon-btn" style="color:var(--rd);padding:4px 6px;" onclick="del(\'blog\',' + b.id + ',\'' + esc(b.title) + '\')" title="মুছুন">' + svgTrash + '</button>' +
+      '</div>' : '') +
+    '</div>' +
+  '</div>';
+}
+
+function viewBlogModal(id) {
+  var b = S.blog.find(function(x){ return x.id === id; });
+  if (!b) return;
+
+  var paragraphs = (b.content || "").split("\n").filter(function(p){ return p.trim().length > 0; });
+
+  document.getElementById("md").innerHTML =
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:680px;max-height:90vh;overflow-y:auto;">' +
+        '<div class="modal-head">' +
+          '<span class="chip b" style="font-size:0.85rem;">' + esc(b.category) + '</span>' +
+          '<button class="modal-close" onclick="cls()">&times;</button>' +
+        '</div>' +
+
+        (b.pic ?
+          '<div style="width:100%;max-height:320px;overflow:hidden;border-radius:var(--radius-sm);margin-bottom:18px;border:1px solid var(--ln);">' +
+            '<img src="' + esc(b.pic) + '" alt="' + esc(b.title) + '" style="width:100%;height:100%;object-fit:cover;">' +
+          '</div>' : '') +
+
+        '<h2 style="margin:0 0 10px;font-size:1.8rem;line-height:1.35;color:var(--ink-head);">' + esc(b.title) + '</h2>' +
+
+        '<div style="display:flex;gap:16px;color:var(--mut);font-size:0.88rem;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--ln-subtle);flex-wrap:wrap;">' +
+          '<span style="display:inline-flex;align-items:center;gap:6px;">' + svgUser + ' লেখক: <b style="color:var(--ink);">' + esc(b.author || "অ্যাডমিন") + '</b></span>' +
+          '<span style="display:inline-flex;align-items:center;gap:6px;">' + svgCalendar + ' তারিখ: ' + dt(b.created_at) + '</span>' +
+        '</div>' +
+
+        '<div style="color:var(--ink);line-height:1.8;font-size:1.02rem;margin-bottom:24px;">' +
+          (paragraphs.length ?
+            paragraphs.map(function(p){ return '<p style="margin:0 0 14px;">' + esc(p) + '</p>'; }).join("") :
+            '<p style="color:var(--mut);font-style:italic;">কোনো বিস্তারিত বিবরণ নেই।</p>'
+          ) +
+        '</div>' +
+
+        '<div style="display:flex;gap:10px;justify-content:space-between;align-items:center;border-top:1px solid var(--ln-subtle);padding-top:16px;">' +
+          (ADMIN ? '<button class="btn" onclick="cls();openAddBlogModal(' + b.id + ')">' + svgEdit + ' পোস্ট সম্পাদনা</button>' : '<div></div>') +
+          '<button class="btn g" onclick="cls()">বন্ধ করুন</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function openAddBlogModal(editId) {
+  if (!ADMIN) return;
+  var isEdit = !!editId;
+  var b = isEdit ? S.blog.find(function(x){ return x.id === editId; }) : null;
+  var curCat = b ? b.category : "সংবাদ ও নোটিশ";
+  var currentPic = b ? b.pic : "";
+
+  document.getElementById("md").innerHTML =
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:620px;">' +
+        '<div class="modal-head">' +
+          '<h3 style="margin:0;font-size:1.35rem;">' + (isEdit ? '📰 পোস্ট সম্পাদনা করুন' : '📰 নতুন ব্লগ বা সংবাদ প্রকাশ করুন') + '</h3>' +
+          '<button class="modal-close" onclick="cls()">&times;</button>' +
+        '</div>' +
+        '<p style="color:var(--mut);font-size:0.88rem;margin:-10px 0 16px;">সংগঠনের মানবিক কার্যক্রম, নোটিশ, স্মরণিকা ও খবরাখবর সবার সাথে শেয়ার করুন।</p>' +
+
+        '<form id="blogForm" onsubmit="saveBlog(event, ' + (isEdit ? editId : 'null') + ')" class="form-grid">' +
+          '<div class="form-group">' +
+            '<label>পোস্টের শিরোনাম (Title) *</label>' +
+            '<input id="bf_title" value="' + esc(b ? b.title : "") + '" placeholder="যেমন: শীতবস্ত্র বিতরণ কর্মসূচি সফলভাবে সম্পন্ন" required>' +
+          '</div>' +
+
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label>ক্যাটাগরি *</label>' +
+              '<select id="bf_cat_sel" onchange="syncInput(\'bf_cat\', this.value)" style="margin-bottom:6px;">' +
+                '<option value="">-- ক্যাটাগরি বাছুন --</option>' +
+                BLOG_CATEGORIES.map(function(c){ return '<option value="' + esc(c) + '"' + (c === curCat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join("") +
+                '<option value="__custom__">✍️ নতুন কাস্টম ক্যাটাগরি লিখুন...</option>' +
+              '</select>' +
+              '<input id="bf_cat" value="' + esc(curCat) + '" placeholder="যেমন: সংবাদ ও নোটিশ">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label>লেখকের নাম / পদবী</label>' +
+              '<input id="bf_author" value="' + esc(b ? b.author : "অ্যাডমিন") + '" placeholder="অ্যাডমিন">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-group">' +
+            '<label>পোস্টের ব্যানার / ছবি (Cover Photo)</label>' +
+            '<div class="upload-zone" onclick="document.getElementById(\'bf_file\').click()">' +
+              (currentPic ? '<img src="' + esc(currentPic) + '" id="bf_prev" class="upload-preview-img">' : '<div id="bf_prev" class="upload-preview-img" style="display:none;"></div>') +
+              '<div style="font-size:0.9rem;color:var(--primary-light);font-weight:600;">📁 কম্পিউটার/ফোন থেকে ছবি নির্বাচন করুন</div>' +
+              '<small style="color:var(--mut);">JPG, PNG বা WEBP ছবি নির্বাচন করতে এখানে চাপুন</small>' +
+              '<input type="file" id="bf_file" accept="image/*" onchange="previewUpload(this, \'bf_prev\')">' +
+            '</div>' +
+            '<div style="margin-top:6px;">' +
+              '<input id="bf_url" value="' + esc(b ? b.pic : "") + '" placeholder="অথবা সরাসরি ছবির অনলাইন লিংক (Image URL) দিন">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-group">' +
+            '<label>পোস্টের বিস্তারিত বিষয়বস্তু (Content) *</label>' +
+            '<textarea id="bf_content" style="min-height:160px;" placeholder="পোস্টের সম্পূর্ণ বিবরণ লিখুন..." required>' + esc(b ? b.content : "") + '</textarea>' +
+          '</div>' +
+
+          '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">' +
+            '<button type="button" class="btn" onclick="cls()">বাতিল</button>' +
+            '<button type="submit" class="btn g">✓ ' + (isEdit ? 'হালনাগাদ প্রকাশ করুন' : 'পোস্ট প্রকাশ করুন') + '</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>' +
+    '</div>';
+}
+
+function saveBlog(e, editId) {
+  e.preventDefault();
+  if (!ADMIN) return;
+
+  var title = v("bf_title");
+  if (!title) { alert("পোস্টের শিরোনাম আবশ্যক!"); return; }
+
+  var cat = v("bf_cat");
+  if (!cat) {
+    var selCat = v("bf_cat_sel");
+    if (selCat && selCat !== "__custom__") cat = selCat;
+  }
+  if (!cat) cat = "সংবাদ ও নোটিশ";
+
+  var content = v("bf_content");
+  if (!content) { alert("পোস্টের বিষয়বস্তু লিখুন!"); return; }
+
+  var fd = new FormData();
+  fd.append("title", title);
+  fd.append("category", cat);
+  fd.append("author", v("bf_author") || "অ্যাডমিন");
+  fd.append("content", content);
+
+  var urlVal = v("bf_url");
+  if (urlVal) fd.append("photo_url", urlVal);
+
+  var fileInput = document.getElementById("bf_file");
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    fd.append("photo", fileInput.files[0]);
+  }
+
+  var method = editId ? "PATCH" : "POST";
+  var endpoint = editId ? "posts/" + editId + "/" : "posts/";
+
+  api(method, endpoint, fd, true).then(function(){
+    cls();
+    reload();
+  }).catch(fail);
+}
+
 function adm() {
   var evo = ["সাধারণ খরচ"].concat(S.ev.map(function(e){ return e.t; }));
   var ins = S.tx.filter(function(t){ return t.k === "in"; }).sort(function(a,b){ return a.d < b.d ? 1 : -1; });
@@ -2101,6 +2976,62 @@ function adm() {
       '</table></div>' :
       '<p style="color:var(--mut);margin:0;">বর্তমানে কোনো নতুন অনুদানের রিকোয়েস্ট পেন্ডিং নেই।</p>'
     ) +
+  '</div>' +
+
+  /* Alumni quick action */
+  '<div class="box" style="margin-bottom:24px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+      '<div>' +
+        '<h3 style="margin:0;font-size:1.3rem;">🎓 অ্যালামনাই ও প্রাক্তন সদস্য পরিচালনা</h3>' +
+        '<small style="color:var(--mut);">সংগঠনের প্রাক্তন সদস্য, তাদের সাবেক পদবী, বর্তমান কর্মসংস্থান ও প্রোফাইল</small>' +
+      '</div>' +
+      '<button class="btn g sm" onclick="openAddAlumniModal()">+ নতুন অ্যালামনাই যোগ করুন</button>' +
+    '</div>' +
+    '<div class="scroll"><table>' +
+      '<tr><th>ছবি</th><th>নাম</th><th>সাবেক পদবী / ব্যাচ</th><th>বর্তমান চাকরি / পদবী</th><th>শিক্ষা</th><th>মোবাইল</th><th>প্রোফাইল লিংক</th><th>পদক্ষেপ</th></tr>' +
+      (S.alumni.length ? S.alumni.map(function(a){
+        return '<tr>' +
+          '<td>' + (a.pic ? '<img src="' + esc(a.pic) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--gold);">' : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(245,158,11,0.15);display:grid;place-items:center;color:var(--gold-light);font-size:0.9rem;">' + esc(a.name.charAt(0)) + '</div>') + '</td>' +
+          '<td><b>' + esc(a.name) + '</b></td>' +
+          '<td><span class="chip" style="background:rgba(245,158,11,0.12);color:var(--gold-light);">' + esc(a.former_role || "-") + '</span></td>' +
+          '<td>' + esc(a.job_title || "-") + '</td>' +
+          '<td>' + esc(a.education || "-") + '</td>' +
+          '<td>' + esc(a.phone || "-") + '</td>' +
+          '<td>' + (a.profile_link ? '<a href="' + esc(a.profile_link) + '" target="_blank" rel="noopener noreferrer" class="btn sm" style="padding:2px 8px;font-size:0.75rem;">লিংক ↗</a>' : '-') + '</td>' +
+          '<td>' +
+            '<button class="btn sm" onclick="openAddAlumniModal(' + a.id + ')">সম্পাদনা</button> ' +
+            '<button class="btn sm danger" onclick="del(\'alumni\',' + a.id + ',\'' + esc(a.name) + '\')">মুছুন</button>' +
+          '</td>' +
+        '</tr>';
+      }).join("") : '<tr><td colspan="8" style="color:var(--mut);text-align:center;">কোনো অ্যালামনাই তালিকাভুক্ত নেই।</td></tr>') +
+    '</table></div>' +
+  '</div>' +
+
+  /* Blog quick action */
+  '<div class="box" style="margin-bottom:24px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+      '<div>' +
+        '<h3 style="margin:0;font-size:1.3rem;">📰 ব্লগ ও সংবাদ পোস্ট পরিচালনা</h3>' +
+        '<small style="color:var(--mut);">সংগঠনের সব প্রকাশনা, খবর ও বিজ্ঞপ্তি</small>' +
+      '</div>' +
+      '<button class="btn g sm" onclick="openAddBlogModal()">+ নতুন পোস্ট লিখুন</button>' +
+    '</div>' +
+    '<div class="scroll"><table>' +
+      '<tr><th>কভার</th><th>শিরোনাম</th><th>ক্যাটাগরি</th><th>লেখক</th><th>তারিখ</th><th>পদক্ষেপ</th></tr>' +
+      (S.blog.length ? S.blog.map(function(b){
+        return '<tr>' +
+          '<td>' + (b.pic ? '<img src="' + esc(b.pic) + '" style="width:48px;height:32px;border-radius:4px;object-fit:cover;">' : '<div style="width:48px;height:32px;border-radius:4px;background:var(--sf-glass);display:grid;place-items:center;font-size:0.9rem;">📰</div>') + '</td>' +
+          '<td><b style="color:var(--ink-head);">' + esc(b.title) + '</b></td>' +
+          '<td><span class="chip b">' + esc(b.category) + '</span></td>' +
+          '<td>' + esc(b.author || "অ্যাডমিন") + '</td>' +
+          '<td>' + dt(b.created_at) + '</td>' +
+          '<td>' +
+            '<button class="btn sm" onclick="openAddBlogModal(' + b.id + ')">সম্পাদনা</button> ' +
+            '<button class="btn sm danger" onclick="del(\'blog\',' + b.id + ',\'' + esc(b.title) + '\')">মুছুন</button>' +
+          '</td>' +
+        '</tr>';
+      }).join("") : '<tr><td colspan="6" style="color:var(--mut);text-align:center;">কোনো পোস্ট প্রকাশিত হয়নি।</td></tr>') +
+    '</table></div>' +
   '</div>' +
 
   /* Member quick action */
@@ -2248,6 +3179,8 @@ function draw() {
   var viewMap = {
     dash: dash,
     mem: mem,
+    alumni: alumni,
+    blog: blog,
     pay: pay,
     plan: plan,
     fin: fin,

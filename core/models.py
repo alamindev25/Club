@@ -123,3 +123,58 @@ class PaymentAccount(models.Model):
     @classmethod
     def load(cls):
         return cls.objects.first() or cls.objects.create()
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=250)
+    category = models.CharField(max_length=120, default="সংবাদ ও আপডেট", blank=True)
+    author = models.CharField(max_length=120, default="সংগঠন প্রশাসন", blank=True)
+    content = models.TextField()
+    photo = models.ImageField(upload_to="blog/", blank=True, null=True)
+    photo_url = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def display_photo(self):
+        if self.photo:
+            try:
+                return self.photo.url
+            except Exception:
+                pass
+        return self.photo_url or ""
+
+
+class Alumni(models.Model):
+    name = models.CharField(max_length=120)
+    former_role = models.CharField(max_length=120, blank=True, default="প্রাক্তন সদস্য")
+    job_title = models.CharField(max_length=150, blank=True)
+    education = models.CharField(max_length=200, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    email = models.CharField(max_length=120, blank=True)
+    photo = models.ImageField(upload_to="alumni/", blank=True, null=True)
+    photo_url = models.TextField(blank=True, default="")
+    bio = models.TextField(blank=True, default="")
+    profile_link = models.CharField(max_length=300, blank=True)
+    order = models.PositiveSmallIntegerField(default=10)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        ordering = ["order", "-id"]
+
+    def __str__(self):
+        return f"{self.name} ({self.former_role})"
+
+    @property
+    def display_photo(self):
+        if self.photo:
+            try:
+                return self.photo.url
+            except Exception:
+                pass
+        return self.photo_url or ""

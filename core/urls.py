@@ -4,6 +4,8 @@ from . import views as v
 
 r = DefaultRouter()
 r.register("members", v.MemberViewSet)
+r.register("alumni", v.AlumniViewSet)
+r.register("posts", v.BlogPostViewSet)
 r.register("goals", v.GoalViewSet)
 r.register("events", v.EventViewSet)
 r.register("admin/transactions", v.TransactionViewSet)
