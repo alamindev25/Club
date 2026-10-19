@@ -1342,6 +1342,7 @@ function openAddMemberModal(editId) {
                 '<option value="__custom__">✍️ নতুন কাস্টম পদবী নিজে লিখুন...</option>' +
               '</select>' +
               '<input id="mf_r" value="' + esc(curRole) + '" placeholder="বা সরাসরি পদবীর নাম লিখুন (যেমন: মিডিয়া সম্পাদক)">' +
+            '<small style="color:var(--mut);display:block;margin-top:3px;font-size:0.75rem;">💡 ড্রপডাউন থেকে পদবী বাছতে পারেন অথবা বক্সে সরাসরি যেকোনো নতুন পদবী লিখে দিতে পারেন।</small>' +
             '</div>' +
           '</div>' +
 
@@ -1655,16 +1656,16 @@ function renderMemberCard(m) {
           '<button type="button" class="icon-btn" onclick="alert(\'এই সদস্যের কোনো মোবাইল নম্বর যুক্ত করা নেই।\')" title="ফোন নম্বর যুক্ত করা নেই" style="opacity:0.45;cursor:not-allowed;">' + svgPhone + '</button>'
         ) +
       '</div>' +
-      (ADMIN ? '<div class="member-admin-actions">' +
-        '<button class="icon-btn" onclick="openAddMemberModal(' + m.id + ')" title="সম্পাদনা">' + svgEdit + '</button>' +
-        '<button class="icon-btn" style="color:var(--rd);" onclick="del(\'mem\',' + m.id + ',\'' + esc(m.n) + '\')" title="মুছুন">' + svgTrash + '</button>' +
+      (ADMIN ? '<div class="member-admin-actions" style="display:flex;gap:6px;align-items:center;">' +
+        '<button class="btn sm" onclick="openAddMemberModal(' + m.id + ')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:0.8rem;background:var(--primary-subtle);color:var(--primary);border:1px solid var(--primary);border-radius:4px;font-weight:600;" title="সদস্যের পদবী ও তথ্য সম্পাদনা করুন">' + svgEdit + ' সম্পাদনা</button>' +
+        '<button class="icon-btn" style="color:var(--rd);padding:4px 6px;" onclick="del(\'mem\',' + m.id + ',\'' + esc(m.n) + '\')" title="মুছুন">' + svgTrash + '</button>' +
       '</div>' : '') +
     '</div>' +
   '</div>';
 }
 
 function mem() {
-  var roleOptions = ["সব", "উপদেষ্টা ও সভাপতি", "সাধারণ সম্পাদক ও সম্পাদকীয়", "সচিবালয় ও নির্বাহী", "সাধারণ সদস্য"];
+  var roleOptions = ["সব", "উপদেষ্টা ও সভাপতি", "সাধারণ সম্পাদক ও সম্পাদকীয়", "কার্যনির্বাহী সদস্য", "সাধারণ সদস্য"];
   var currentFilter = S.memRoleFilter || "সব";
   var search = (S.memSearch || "").toLowerCase();
 
@@ -1680,7 +1681,7 @@ function mem() {
     if (currentFilter === "সব") return true;
     if (currentFilter === "উপদেষ্টা ও সভাপতি") return m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0;
     if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return m.r.indexOf("সম্পাদক") >= 0;
-    if (currentFilter === "সচিবালয় ও নির্বাহী") return m.r.indexOf("সচিবালয়") >= 0 || m.r.indexOf("নির্বাহী") >= 0;
+    if (currentFilter === "কার্যনির্বাহী সদস্য") return m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0;
     if (currentFilter === "সাধারণ সদস্য") return m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0;
     return true;
   });
@@ -1736,7 +1737,7 @@ function drawMemberGrid() {
     if (currentFilter === "সব") return true;
     if (currentFilter === "উপদেষ্টা ও সভাপতি") return m.r.indexOf("সভাপতি") >= 0 || m.r.indexOf("উপদেষ্টা") >= 0;
     if (currentFilter === "সাধারণ সম্পাদক ও সম্পাদকীয়") return m.r.indexOf("সম্পাদক") >= 0;
-    if (currentFilter === "সচিবালয় ও নির্বাহী") return m.r.indexOf("সচিবালয়") >= 0 || m.r.indexOf("নির্বাহী") >= 0;
+    if (currentFilter === "কার্যনির্বাহী সদস্য") return m.r.indexOf("কার্যনির্বাহী") >= 0 || m.r.indexOf("নির্বাহী") >= 0 || m.r.indexOf("সচিবালয়") >= 0;
     if (currentFilter === "সাধারণ সদস্য") return m.r.indexOf("সাধারণ সদস্য") >= 0 || m.r.indexOf("আজীবন") >= 0;
     return true;
   });
