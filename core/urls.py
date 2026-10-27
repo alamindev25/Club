@@ -15,6 +15,10 @@ urlpatterns = [
     path("login/", v.LoginView.as_view()),
     path("summary/", v.SummaryView.as_view()),
     path("settings/", v.SettingsView.as_view()),
+    path("payments/initiate/", v.PaymentInitiateView.as_view()),
+    path("payments/verify/", v.PaymentVerifyView.as_view()),
+    path("payments/gateway-return/", v.GatewayReturnView.as_view()),
+    path("payments/ipn/", v.PaymentIPNView.as_view()),
     path("payments/", v.PaymentCreate.as_view()),
     path("", include(r.urls)),
 ]

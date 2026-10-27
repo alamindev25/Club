@@ -98,8 +98,14 @@ class Transaction(models.Model):
         return f"{self.kind} {self.amount}"
 
 
+PAYMENT_STATUS = ch("pending", "approved", "rejected", "initiated", "completed", "failed", "cancelled")
+GATEWAY_MODES = [("sandbox", "স্যান্ডবক্স / টেস্ট মোড"), ("live", "লাইভ মোড")]
+GATEWAY_PROVIDERS = [("auto", "অটোমেটিক স্মার্ট গেটওয়ে"), ("sslcommerz", "SSLCommerz"), ("bkash", "bKash Direct PGW")]
+
+
 class Payment(models.Model):
-    """দাতার জমা দেওয়া অনুদান, অ্যাডমিন যাচাইয়ের আগ পর্যন্ত pending।"""
+    """স্বয়ংক্রিয় বা অনলাইন পেমেন্ট / অনুদানের বিবরণ।"""
+    tran_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
     name = models.CharField(max_length=120)
     profession = models.CharField(max_length=120, blank=True)
     phone = models.CharField(max_length=30, blank=True)
@@ -107,18 +113,41 @@ class Payment(models.Model):
     trx_id = models.CharField(max_length=80, blank=True)
     amount = money()
     note = models.CharField(max_length=300, blank=True)
-    status = models.CharField(max_length=10, choices=ch("pending", "approved", "rejected"), default="pending")
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default="pending")
+    gateway_provider = models.CharField(max_length=50, default="auto", blank=True)
+    bank_tran_id = models.CharField(max_length=100, blank=True, default="")
+    card_type = models.CharField(max_length=60, blank=True, default="")
+    ipn_data = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
 
+    def __str__(self):
+        return f"{self.name} - {self.amount} ({self.status})"
+
 
 class PaymentAccount(models.Model):
+    # ম্যানুয়াল প্রদর্শনের তথ্য
     bkash = models.CharField(max_length=60, blank=True)
     rocket = models.CharField(max_length=60, blank=True)
     nagad = models.CharField(max_length=60, blank=True)
     bank = models.CharField(max_length=300, blank=True)
+
+    # অটোমেটিক গেটওয়ে কনফিগারেশন
+    auto_gateway_enabled = models.BooleanField(default=True)
+    gateway_mode = models.CharField(max_length=20, default="sandbox", choices=GATEWAY_MODES)
+    gateway_provider = models.CharField(max_length=30, default="auto", choices=GATEWAY_PROVIDERS)
+    
+    # SSLCommerz ক্রেডেনশিয়াল
+    sslcz_store_id = models.CharField(max_length=100, blank=True, default="")
+    sslcz_store_passwd = models.CharField(max_length=100, blank=True, default="")
+    
+    # bKash Direct PGW ক্রেডেনশিয়াল
+    bkash_app_key = models.CharField(max_length=150, blank=True, default="")
+    bkash_app_secret = models.CharField(max_length=150, blank=True, default="")
+    bkash_username = models.CharField(max_length=100, blank=True, default="")
+    bkash_password = models.CharField(max_length=100, blank=True, default="")
 
     @classmethod
     def load(cls):

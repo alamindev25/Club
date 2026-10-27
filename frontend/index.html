@@ -1155,7 +1155,104 @@ footer {
   color: var(--mut);
   font-size: 0.9rem;
 }
-footer strong { color: var(--primary-light); font-weight: 600; }
+/* Automated Gateway Styles & Receipt */
+.gw-amount-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.gw-chip {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--sf-glass);
+  border: 1px solid var(--ln);
+  color: var(--ink-head);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.gw-chip:hover, .gw-chip.active {
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+  color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+.gw-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 14px 0 20px;
+}
+.gw-card {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--sf-glass);
+  border: 2px solid var(--ln-subtle);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s;
+  text-align: center;
+}
+.gw-card:hover {
+  border-color: var(--primary);
+  background: var(--sf-card-hover);
+  transform: translateY(-2px);
+}
+.gw-card.active {
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+  box-shadow: 0 6px 18px var(--primary-glow);
+}
+.gw-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.gw-btn-main {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--ac-glow);
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+.gw-btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--ac-glow);
+  filter: brightness(1.08);
+}
+.receipt-box {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  position: relative;
+  border-top: 6px solid #10b981;
+}
+@media print {
+  body * { visibility: hidden !important; }
+  #receipt-print-area, #receipt-print-area * { visibility: visible !important; }
+  #receipt-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+  .no-print { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1445,7 +1542,22 @@ function reload() {
       return { id: e.id, t: e.title, o: e.organization, d: e.date || "", st: e.status };
     });
     S.sum = r[3] || { income: 0, expense: 0, by_event: {} };
-    S.acc = { b: r[4].bkash, r: r[4].rocket, n: r[4].nagad, k: r[4].bank };
+    var acData = r[4] || {};
+    S.acc = {
+      b: acData.bkash || "",
+      r: acData.rocket || "",
+      n: acData.nagad || "",
+      k: acData.bank || "",
+      auto_gateway_enabled: acData.auto_gateway_enabled !== false,
+      gateway_mode: acData.gateway_mode || "sandbox",
+      gateway_provider: acData.gateway_provider || "auto",
+      sslcz_store_id: acData.sslcz_store_id || "",
+      sslcz_store_passwd: acData.sslcz_store_passwd || "",
+      bkash_app_key: acData.bkash_app_key || "",
+      bkash_app_secret: acData.bkash_app_secret || "",
+      bkash_username: acData.bkash_username || "",
+      bkash_password: acData.bkash_password || ""
+    };
 
     S.alumni = (r[5] || []).map(function(a){
       return {
@@ -1479,7 +1591,22 @@ function reload() {
 
     if (ADMIN && r[7] && r[8]) {
       S.pay = r[7].map(function(p){
-        return { id: p.id, w: p.name, pf: p.profession, ph: p.phone, m: p.method, trx: p.trx_id, a: Number(p.amount), d: p.created_at, n: p.note };
+        return {
+          id: p.id,
+          tran_id: p.tran_id,
+          w: p.name,
+          pf: p.profession,
+          ph: p.phone,
+          m: p.method,
+          trx: p.trx_id,
+          a: Number(p.amount),
+          d: p.created_at,
+          n: p.note,
+          st: p.status,
+          gw: p.gateway_provider,
+          bank_tran: p.bank_tran_id,
+          card: p.card_type
+        };
       });
       S.tx = r[8].map(function(t){
         return { id: t.id, k: t.kind, w: t.donor_name, pf: t.profession, ph: t.phone, src: t.method, a: Number(t.amount), d: t.paid_at, n: t.note, ev: t.event };
@@ -2138,86 +2265,279 @@ function cp(btn, text) {
   }
 }
 
+/* ==============================================================
+   AUTOMATED DIGITAL PAYMENT & DONATION ENGINE
+   ============================================================== */
+var PRESET_AMOUNTS = [100, 500, 1000, 2500, 5000, 10000];
+
+function setAmount(amt) {
+  var el = document.getElementById("ya");
+  if (el) {
+    el.value = amt;
+    updatePayBtnText();
+  }
+}
+
+function updatePayBtnText() {
+  var amt = v("ya");
+  var btnEl = document.getElementById("payBtnLabel");
+  if (btnEl) {
+    btnEl.textContent = amt && Number(amt) > 0 ? "⚡ ৳ " + bn(amt) + " সরাসরি অনলাইন পেমেন্ট করুন" : "⚡ সরাসরি অনলাইন পেমেন্ট করুন";
+  }
+}
+
 function pay() {
   var A = S.acc || {};
   var m = pmSel();
-  var i = METH.indexOf(m);
-  var num = [A.b, A.r, A.n, A.k][i] || "";
-  var dial = ["*247#", "*322#", "*167#", ""][i];
+  var curAmt = v("ya") || "1000";
 
-  return '<div class="box" style="margin-bottom:20px;">' +
-    '<h3 style="margin:0 0 14px;font-size:1.3rem;">পেমেন্টের মাধ্যম বেছে নিন</h3>' +
-    '<div class="member-filter-pills" style="margin:0;">' +
+  var methodBadges = {
+    "বিকাশ": { color: "#e2136e", bg: "rgba(226,19,110,0.14)", icon: "🌸", note: "বিকাশ অটো চেকআউট" },
+    "নগদ (Nagad)": { color: "#f7941d", bg: "rgba(247,148,29,0.14)", icon: "⚡", note: "নগদ অটো পেমেন্ট" },
+    "রকেট": { color: "#8c3494", bg: "rgba(140,52,148,0.14)", icon: "🚀", note: "রকেট অনলাইন গেটওয়ে" },
+    "ব্যাংক ট্রান্সফার": { color: "#0284c7", bg: "rgba(2,132,199,0.14)", icon: "💳", note: "কার্ড ও ইন্টারনেট ব্যাংকিং" }
+  };
+
+  return '<div class="member-header-bar">' +
+    '<div>' +
+      '<h2 style="margin:0 0 4px;font-size:1.8rem;">💳 সরাসরি ডিজিটাল অনুদান ও পেমেন্ট</h2>' +
+      '<p style="color:var(--mut);">বিকাশ, নগদ, রকেট বা ব্যাংক কার্ডের মাধ্যমে ১ ক্লিকেই নিরাপদ অটোমেটিক অনুদান দিন</p>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<span class="chip" style="background:rgba(16,185,129,0.15);color:var(--ac);font-weight:600;">🔒 ১০০% অটোমেটেড গেটওয়ে</span>' +
+    '</div>' +
+  '</div>' +
+
+  '<div class="box" style="margin-bottom:24px;border:1px solid var(--primary);">' +
+    '<h3 style="margin:0 0 12px;font-size:1.25rem;color:var(--primary-light);">১. অনুদানের পরিমাণ নির্বাচন করুন (Amount)</h3>' +
+    '<div class="gw-amount-grid">' +
+      PRESET_AMOUNTS.map(function(amt){
+        return '<button type="button" class="gw-chip" onclick="setAmount(' + amt + ')">৳ ' + bn(amt) + '</button>';
+      }).join("") +
+    '</div>' +
+    '<div style="position:relative;margin-bottom:6px;">' +
+      '<span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1.4rem;font-weight:bold;color:var(--primary-light);">৳</span>' +
+      '<input id="ya" type="number" min="1" value="' + esc(curAmt) + '" oninput="updatePayBtnText()" style="padding-left:40px;font-size:1.3rem;font-weight:700;font-family:\'Outfit\',sans-serif;" placeholder="অন্যান্য পরিমাণ লিখুন...">' +
+    '</div>' +
+    '<small style="color:var(--mut);">আপনি যেকোনো কাঙ্ক্ষিত পরিমাণ টাইপ করতে পারেন (যেমন: ৫০০, ১২০০, ৫০০০)।</small>' +
+  '</div>' +
+
+  '<div class="box" style="margin-bottom:24px;">' +
+    '<h3 style="margin:0 0 6px;font-size:1.25rem;">২. স্বয়ংক্রিয় পেমেন্টের মাধ্যম বেছে নিন</h3>' +
+    '<p style="color:var(--mut);font-size:0.88rem;margin:0 0 14px;">পেমেন্ট সফল হওয়ামাত্রই স্বয়ংক্রিয়ভাবে সংগঠনের ফান্ডে যুক্ত হবে এবং তাৎক্ষণিক অনলাইন মানি রিসিপ্ট পাবেন।</p>' +
+    '<div class="gw-methods-grid">' +
       METH.map(function(name){
-        return '<button aria-pressed="' + (pmSel() === name) + '" style="padding:10px 22px;font-weight:600;font-size:1rem;" onclick="setPm(\'' + name + '\')">' + name + '</button>';
+        var isAct = pmSel() === name;
+        var info = methodBadges[name] || { color: "var(--primary)", bg: "var(--primary-subtle)", icon: "💳", note: "ডিজিটাল গেটওয়ে" };
+        return '<div class="gw-card ' + (isAct ? 'active' : '') + '" onclick="setPm(\'' + name + '\')">' +
+          '<div style="font-size:1.6rem;color:' + info.color + ';">' + info.icon + '</div>' +
+          '<b style="font-size:1.05rem;color:var(--ink-head);">' + name + '</b>' +
+          '<span class="gw-badge" style="background:' + info.bg + ';color:' + info.color + ';">' + info.note + '</span>' +
+        '</div>';
       }).join("") +
     '</div>' +
   '</div>' +
 
-  '<div class="box" style="margin-bottom:20px;border-color:var(--primary);">' +
-    '<h3 style="margin:0 0 8px;font-size:1.3rem;color:var(--primary-light);">' + esc(m) + '-এ অনুদান পাঠানোর নিয়ম</h3>' +
-    (num ? 
-      '<div style="background:var(--primary-subtle);border:1px solid var(--primary);border-radius:var(--radius-sm);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:16px 0;">' +
-        '<div>' +
-          '<div style="font-size:0.85rem;color:var(--mut);">অনুমোদিত অ্যাকাউন্ট নম্বর:</div>' +
-          '<b style="font-size:1.6rem;color:var(--ink-head);font-family:\'Outfit\',sans-serif;letter-spacing:1px;">' + esc(num) + '</b>' +
-        '</div>' +
-        '<div style="display:flex;gap:10px;">' +
-          '<button class="btn g" onclick="cp(this,\'' + esc(num).replace(/['\\]/g,"") + '\')">📋 নম্বর কপি করুন</button>' +
-          (dial ? '<a class="btn" href="tel:' + encodeURIComponent(dial) + '">📞 ' + esc(dial) + ' ডায়াল করুন</a>' : '') +
-        '</div>' +
-      '</div>' : 
-      '<p style="color:var(--rd);margin:14px 0;">⚠️ অ্যাডমিন এখনো এই মাধ্যমের জন্য কোনো নম্বর যুক্ত করেননি।</p>'
-    ) +
-    '<ol style="color:var(--ink);line-height:1.8;padding-left:22px;margin:14px 0 0;">' +
-      '<li>' + (i < 3 ? 'আপনার ' + esc(m) + ' অ্যাপ অথবা ডায়াল কোড থেকে <strong>Send Money</strong> অপশনটি বেছে নিন।' : 'ব্যাংক অ্যাপ, অনলাইন ট্রান্সফার বা শাখা থেকে সরাসরি ডিপোজিট করুন।') + '</li>' +
-      '<li>উপরের নম্বরে কাঙ্ক্ষিত অনুদানের অর্থ প্রেরণ করুন।</li>' +
-      '<li>লেনদেন সফল হলে ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করে নিচের ফর্মে তথ্য দিন।</li>' +
-    '</ol>' +
-  '</div>' +
-
-  '<div class="box">' +
-    '<h3 style="margin:0 0 6px;font-size:1.3rem;">আপনার অনুদানের তথ্য নিবন্ধন করুন</h3>' +
-    '<p style="color:var(--mut);font-size:0.9rem;margin:0 0 16px;">অর্থ পাঠানোর পর নিচের ফর্মটি পূরণ করে সাবমিট করুন। অ্যাডমিন তথ্য যাচাই করে চূড়ান্ত হিসাবে অন্তর্ভুক্ত করবেন।</p>' +
-    (PMSG ? '<div class="priv" style="border-color:var(--ac);background:var(--acs);color:var(--ac);font-weight:600;">✓ ' + esc(PMSG) + '</div>' : '') +
+  '<div class="box" style="margin-bottom:24px;">' +
+    '<h3 style="margin:0 0 6px;font-size:1.25rem;">৩. দাতার সাধারণ তথ্য ও পেমেন্ট</h3>' +
+    '<p style="color:var(--mut);font-size:0.88rem;margin:0 0 16px;">অনুদান ও রিসিপ্ট তৈরির জন্য তথ্য দিন। দাতার ব্যক্তিগত মোবাইল গোপন রাখা হয়।</p>' +
     '<div class="form-grid">' +
       '<div class="form-row">' +
-        '<div class="form-group"><label>আপনার নাম *</label><input id="yn" placeholder="দাতার নাম"></div>' +
-        '<div class="form-group"><label>পেশা / পরিচয়</label><input id="yp" placeholder="যেমন: শিক্ষক / ব্যবসায়ী / প্রবাসী"></div>' +
+        '<div class="form-group"><label>আপনার নাম (Name) *</label><input id="yn" placeholder="দাতার পূর্ণ নাম"></div>' +
+        '<div class="form-group"><label>মোবাইল নম্বর (Phone)</label><input id="yh" placeholder="017XXXXXXXX"></div>' +
       '</div>' +
       '<div class="form-row">' +
-        '<div class="form-group"><label>মোবাইল নম্বর</label><input id="yh" placeholder="017xxxxxxxx"></div>' +
-        '<div class="form-group"><label>প্রেরিত টাকার পরিমাণ (৳) *</label><input id="ya" type="number" min="1" placeholder="যেমন: 1000"></div>' +
+        '<div class="form-group"><label>পেশা / কর্মসংস্থান (ঐচ্ছিক)</label><input id="yp" placeholder="যেমন: চাকরিজীবী / ব্যবসায়ী / প্রবাসী"></div>' +
+        '<div class="form-group"><label>বার্তা বা দোয়া (ঐচ্ছিক)</label><input id="yo" placeholder="সংগঠনের প্রতি বার্তা বা শুভকামনা..."></div>' +
       '</div>' +
-      '<div class="form-row">' +
-        '<div class="form-group"><label>পেমেন্টের মাধ্যম</label><select id="ym">' + opts(METH, pmSel()) + '</select></div>' +
-        '<div class="form-group"><label>ট্রানজেকশন আইডি (TrxID) *</label><input id="yt" placeholder="যেমন: 8N7X2KL9"></div>' +
+      '<button id="paySubmitBtn" class="gw-btn-main" onclick="startAutoPay()">' +
+        '<span id="payBtnLabel">⚡ ৳ ' + bn(curAmt) + ' সরাসরি অনলাইন পেমেন্ট করুন</span> &rarr;' +
+      '</button>' +
+      '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;color:var(--mut);font-size:0.85rem;">' +
+        '<span>🔒 কোনো ম্যানুয়াল ভেরিফিকেশন বা অপেক্ষার প্রয়োজন নেই · তাৎক্ষণিক অটো ক্রেডিট</span>' +
       '</div>' +
-      '<div class="form-group"><label>বার্তা / দোয়া (ঐচ্ছিক)</label><textarea id="yo" placeholder="আপনার কোনো বিশেষ মতামত বা বক্তব্য থাকলে লিখুন..."></textarea></div>' +
-      '<button class="btn g" style="padding:12px;font-size:1.05rem;" onclick="addPay()">অনুদান তথ্য জমা দিন</button>' +
     '</div>' +
   '</div>';
 }
 
-function addPay() {
-  var n = v("yn"), a = +v("ya");
-  if (!n || !a || a <= 0) {
-    alert("অনুগ্রহ করে আপনার নাম এবং সঠিক টাকার পরিমাণ লিখুন।");
+function startAutoPay() {
+  var n = v("yn");
+  var a = +v("ya");
+  if (!n) {
+    alert("অনুগ্রহ করে আপনার নাম লিখুন।");
+    var nel = document.getElementById("yn");
+    if (nel) nel.focus();
     return;
   }
-  api("POST", "payments/", {
+  if (!a || a <= 0) {
+    alert("অনুগ্রহ করে সঠিক অনুদানের পরিমাণ লিখুন।");
+    var ael = document.getElementById("ya");
+    if (ael) ael.focus();
+    return;
+  }
+
+  var btn = document.getElementById("paySubmitBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">⏳</span> পেমেন্ট গেটওয়েতে সংযোগ হচ্ছে...';
+  }
+
+  api("POST", "payments/initiate/", {
     name: n,
-    profession: v("yp"),
-    phone: v("yh"),
-    method: v("ym"),
-    trx_id: v("yt"),
     amount: a,
-    note: v("yo")
-  }).then(function(){
-    PMSG = "ধন্যবাদ " + n + "! আপনার অনুদানের তথ্য সফলভাবে জমা হয়েছে। অ্যাডমিন ভেরিফাই করে চূড়ান্ত হিসাবে যুক্ত করবেন।";
-    draw();
-    window.scrollTo({ top: 300, behavior: "smooth" });
-  }).catch(fail);
+    method: pmSel(),
+    phone: v("yh") || "",
+    profession: v("yp") || "",
+    note: v("yo") || ""
+  }).then(function(res) {
+    if (btn) {
+      btn.disabled = false;
+      updatePayBtnText();
+    }
+    if (res.mode === "live_gateway" && res.gateway_url) {
+      window.location.href = res.gateway_url;
+    } else {
+      openGatewaySimulatorModal(res);
+    }
+  }).catch(function(err) {
+    if (btn) {
+      btn.disabled = false;
+      updatePayBtnText();
+    }
+    fail(err);
+  });
+}
+
+function openGatewaySimulatorModal(res) {
+  var brandColor = "#3b82f6";
+  var brandLogo = "💳";
+  var providerTitle = res.method || "বিকাশ";
+  if (res.method.indexOf("বিকাশ") >= 0) {
+    brandColor = "#e2136e";
+    brandLogo = "🌸";
+    providerTitle = "bKash Payment Gateway";
+  } else if (res.method.indexOf("নগদ") >= 0) {
+    brandColor = "#f7941d";
+    brandLogo = "⚡";
+    providerTitle = "Nagad Payment Gateway";
+  } else if (res.method.indexOf("রকেট") >= 0) {
+    brandColor = "#8c3494";
+    brandLogo = "🚀";
+    providerTitle = "Rocket Gateway";
+  } else {
+    brandColor = "#0284c7";
+    brandLogo = "🏦";
+    providerTitle = "Bank Cards & Internet Banking";
+  }
+
+  document.getElementById("md").innerHTML = 
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:440px;padding:0;overflow:hidden;border:2px solid ' + brandColor + ';box-shadow:0 15px 40px rgba(0,0,0,0.6);">' +
+        '<div style="background:' + brandColor + ';padding:20px;color:#fff;text-align:center;">' +
+          '<div style="font-size:2.2rem;margin-bottom:4px;">' + brandLogo + '</div>' +
+          '<h3 style="margin:0;font-size:1.35rem;letter-spacing:0.5px;">' + providerTitle + '</h3>' +
+          '<div style="font-size:0.85rem;opacity:0.9;margin-top:2px;">সমাজ কল্যাণ সংস্থা · মার্চেন্ট অনুদান পোর্টাল</div>' +
+        '</div>' +
+        '<div style="padding:24px 22px;">' +
+          '<div style="background:var(--sf-glass);border:1px solid var(--ln);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;">' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.9rem;">' +
+              '<span style="color:var(--mut);">অনুদানের পরিমাণ:</span>' +
+              '<b style="font-size:1.3rem;color:var(--ac);font-family:\'Outfit\',sans-serif;">৳ ' + taka(res.amount) + '</b>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--mut);">' +
+              '<span>ইনভয়েস আইডি:</span>' +
+              '<code>' + esc(res.tran_id) + '</code>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-group" style="margin-bottom:12px;">' +
+            '<label style="font-size:0.88rem;">অ্যাকাউন্ট / মোবাইল নম্বর</label>' +
+            '<input id="sim_phone" value="' + esc(res.phone || "017XXXXXXXX") + '" style="font-weight:600;font-family:\'Outfit\',sans-serif;">' +
+          '</div>' +
+          '<div class="form-group" style="margin-bottom:18px;">' +
+            '<label style="font-size:0.88rem;">ওটিপি / পিন (সিমুলেশন টেস্ট)</label>' +
+            '<input id="sim_pin" type="password" value="1234" placeholder="••••" style="letter-spacing:4px;font-size:1.2rem;text-align:center;">' +
+            '<small style="color:var(--mut);font-size:0.75rem;">টেস্ট মোড: যেকোনো নম্বর ও পিন দিয়ে সরাসরি অটো ভেরিফিকেশন টেস্ট করা যাবে</small>' +
+          '</div>' +
+
+          '<div id="sim_actions">' +
+            '<button class="gw-btn-main" style="background:' + brandColor + ';margin-bottom:10px;" onclick="confirmAutoPay(\'' + esc(res.tran_id) + '\',\'' + esc(res.method) + '\')">' +
+              '✓ পেমেন্ট নিশ্চিত করুন (Confirm Auto Pay)' +
+            '</button>' +
+            '<button type="button" class="btn" style="width:100%;" onclick="cls()">বাতিল করুন</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function confirmAutoPay(tran_id, provider) {
+  var actEl = document.getElementById("sim_actions");
+  if (actEl) {
+    actEl.innerHTML = '<div style="text-align:center;padding:16px;">' +
+      '<div style="font-size:2rem;animation:spin 1s linear infinite;display:inline-block;margin-bottom:8px;">⚙️</div>' +
+      '<div style="font-weight:600;color:var(--ink-head);">পেমেন্ট প্রসেস হচ্ছে ও তাৎক্ষণিক ফান্ডে যোগ হচ্ছে...</div>' +
+    '</div>';
+  }
+
+  var genTrx = "TRX" + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+  api("POST", "payments/verify/", {
+    tran_id: tran_id,
+    trx_id: genTrx,
+    card_type: provider
+  }).then(function(res) {
+    showDonationReceipt(res);
+    reload();
+  }).catch(function(err) {
+    alert("পেমেন্ট সম্পন্ন করতে সমস্যা হয়েছে: " + (err.detail || err.message || "ত্রুটি"));
+    cls();
+  });
+}
+
+function showDonationReceipt(data) {
+  var recId = "REC-" + (data.trx_id || data.tran_id || "0000").substring(0, 8);
+  var dtStr = data.paid_at || new Date().toLocaleString("bn-BD");
+
+  document.getElementById("md").innerHTML = 
+    '<div class="ov" onclick="if(event.target===this)cls()">' +
+      '<div class="modal-box" style="max-width:520px;padding:0;overflow:hidden;">' +
+        '<div id="receipt-print-area" class="receipt-box">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px dashed #cbd5e1;padding-bottom:16px;margin-bottom:18px;">' +
+            '<div>' +
+              '<h2 style="margin:0 0 4px;font-size:1.4rem;color:#0f172a;">সমাজ কল্যাণ সংস্থা</h2>' +
+              '<div style="font-size:0.85rem;color:#64748b;">মানুষের পাশে, মানুষের জন্য · অফিসিয়াল অনুদান রশিদ</div>' +
+            '</div>' +
+            '<div style="text-align:right;">' +
+              '<span style="display:inline-block;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;padding:4px 10px;border-radius:999px;font-size:0.8rem;font-weight:700;">✓ PAID (অনুমোদিত)</span>' +
+              '<div style="font-size:0.75rem;color:#64748b;margin-top:4px;">রশিদ নং: ' + esc(recId) + '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;font-size:0.92rem;">' +
+            '<div><span style="color:#64748b;display:block;font-size:0.75rem;">দাতার নাম:</span><strong style="color:#0f172a;">' + esc(data.name || "শুভাকাঙ্ক্ষী") + '</strong></div>' +
+            '<div><span style="color:#64748b;display:block;font-size:0.75rem;">পেমেন্ট মাধ্যম:</span><strong style="color:#0f172a;">' + esc(data.method || "অনলাইন") + '</strong></div>' +
+            '<div><span style="color:#64748b;display:block;font-size:0.75rem;">ট্রানজেকশন আইডি (TrxID):</span><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:monospace;color:#0f172a;">' + esc(data.trx_id || data.tran_id) + '</code></div>' +
+            '<div><span style="color:#64748b;display:block;font-size:0.75rem;">তারিখ ও সময়:</span><span style="color:#0f172a;">' + esc(dtStr) + '</span></div>' +
+          '</div>' +
+
+          '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;text-align:center;margin-bottom:18px;">' +
+            '<div style="font-size:0.85rem;color:#64748b;margin-bottom:4px;">অনুদানের মোট পরিমাণ:</div>' +
+            '<div style="font-size:2.2rem;font-weight:800;color:#059669;font-family:\'Outfit\',sans-serif;">৳ ' + taka(data.amount) + '</div>' +
+            '<div style="font-size:0.8rem;color:#64748b;margin-top:4px;">স্বয়ংক্রিয়ভাবে সংগঠনের মূল তহবিলে ক্রেডিট হয়েছে</div>' +
+          '</div>' +
+
+          '<p style="font-size:0.82rem;color:#64748b;text-align:center;margin:0 0 16px;line-height:1.5;">' +
+            'আপনার মানবিক ও কল্যাণকামী অনুদানের জন্য সমাজ কল্যাণ সংস্থার পক্ষ থেকে আন্তরিক ধন্যবাদ ও কৃতজ্ঞতা। আল্লাহ আপনার দান কবুল করুন।' +
+          '</p>' +
+
+          '<div class="no-print" style="display:flex;gap:10px;justify-content:flex-end;">' +
+            '<button type="button" class="btn g" onclick="window.print()">🖨️ রশিদ প্রিন্ট করুন</button>' +
+            '<button type="button" class="btn" onclick="cls();go(\'dash\')">ড্যাশবোর্ডে ফিরে যান</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
 }
 
 /* Goals / Plan */
@@ -2345,13 +2665,23 @@ function noPay(id) { if(!ADMIN) return; api("POST", "admin/payments/" + id + "/r
 
 function setAcc() {
   if (!ADMIN) return;
+  var autoGwEl = document.getElementById("cfg_auto_gw");
   api("PUT", "settings/", {
-    bkash: v("ab"),
-    rocket: v("ar"),
-    nagad: v("an"),
-    bank: v("ak")
+    auto_gateway_enabled: autoGwEl ? autoGwEl.checked : true,
+    gateway_mode: v("cfg_gw_mode") || "sandbox",
+    gateway_provider: v("cfg_gw_prov") || "auto",
+    sslcz_store_id: v("cfg_ssl_id") || "",
+    sslcz_store_passwd: v("cfg_ssl_pass") || "",
+    bkash_app_key: v("cfg_bkash_key") || "",
+    bkash_app_secret: v("cfg_bkash_secret") || "",
+    bkash_username: v("cfg_bkash_user") || "",
+    bkash_password: v("cfg_bkash_pass") || "",
+    bkash: v("ab") || "",
+    rocket: v("ar") || "",
+    nagad: v("an") || "",
+    bank: v("ak") || ""
   }).then(function(){
-    alert("পেমেন্ট অ্যাকাউন্ট তথ্য সফলভাবে হালনাগাদ করা হয়েছে!");
+    alert("পেমেন্ট গেটওয়ে সেটিংস সফলভাবে হালনাগাদ ও সংরক্ষিত হয়েছে!");
     reload();
   }).catch(fail);
 }
@@ -2952,29 +3282,48 @@ function adm() {
     '</div>' +
   '</div>' +
 
-  /* Pending Approvals */
+  /* Online & Automated Payments History */
   '<div class="box" style="margin-bottom:24px;border-color:var(--primary);">' +
-    '<h3 style="margin:0 0 10px;font-size:1.3rem;color:var(--primary-light);">যাচাইয়ের অপেক্ষায় জমাকৃত অনুদান (' + bn(S.pay.length) + ')</h3>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">' +
+      '<div>' +
+        '<h3 style="margin:0;font-size:1.3rem;color:var(--primary-light);">অনলাইন ও স্বয়ংক্রিয় অনুদান লগ (' + bn(S.pay.length) + ')</h3>' +
+        '<small style="color:var(--mut);">অটোমেটিক গেটওয়ে (বিকাশ/নগদ/কার্ড) ও অনুদানের পূর্ণাঙ্গ হিস্ট্রি</small>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<span class="chip" style="background:rgba(16,185,129,0.15);color:var(--ac);font-weight:600;">✓ ১০০% অটো এপ্রুভড</span>' +
+      '</div>' +
+    '</div>' +
     (S.pay.length ? 
       '<div class="scroll"><table>' +
-        '<tr><th>দাতার নাম</th><th>পেশা</th><th>মোবাইল</th><th>মাধ্যম</th><th>TrxID</th><th>তারিখ ও সময়</th><th>টাকার পরিমাণ</th><th>পদক্ষেপ</th></tr>' +
+        '<tr><th>দাতার নাম</th><th>মোবাইল</th><th>মাধ্যম</th><th>ইনভয়েস / TrxID</th><th>তারিখ ও সময়</th><th>টাকার পরিমাণ</th><th>স্ট্যাটাস / পদক্ষেপ</th></tr>' +
         S.pay.map(function(p){
+          var isDone = p.st === "completed" || p.st === "approved";
+          var isFail = p.st === "failed" || p.st === "cancelled";
+          var statusBadge = isDone ? 
+            '<span class="chip" style="background:rgba(16,185,129,0.15);color:var(--ac);font-weight:700;">✓ অটো সম্পন্ন (Auto Verified)</span>' :
+            isFail ?
+            '<span class="chip" style="background:var(--rds);color:var(--rd);">ব্যর্থ / বাতিল</span>' :
+            '<span class="chip b">যাচাই বাকি</span>';
+
+          var actions = isDone ? 
+            '<button class="btn sm" onclick="showDonationReceipt({name:\'' + esc(p.w).replace(/'/g,"\\'") + '\',method:\'' + esc(p.m) + '\',trx_id:\'' + esc(p.trx || p.tran_id) + '\',amount:' + p.a + ',paid_at:\'' + esc(dt(p.d)) + '\'})">রশিদ ↗</button>' :
+            (!isFail ? 
+              '<button class="btn sm g" onclick="okPay(' + p.id + ')">গ্রহণ</button> ' +
+              '<button class="btn sm danger" onclick="noPay(' + p.id + ')">বাতিল</button>' : 
+              '-');
+
           return '<tr>' +
-            '<td><b>' + esc(p.w) + '</b></td>' +
-            '<td>' + esc(p.pf) + '</td>' +
-            '<td>' + esc(p.ph) + '</td>' +
-            '<td>' + esc(p.m) + '</td>' +
-            '<td><code>' + esc(p.trx) + '</code></td>' +
+            '<td><b>' + esc(p.w) + '</b>' + (p.pf ? '<br><small style="color:var(--mut);">' + esc(p.pf) + '</small>' : '') + '</td>' +
+            '<td>' + (p.ph ? esc(p.ph) : '-') + '</td>' +
+            '<td><span class="chip b">' + esc(p.m) + '</span></td>' +
+            '<td><code>' + esc(p.trx || p.tran_id || "-") + '</code></td>' +
             '<td>' + dt(p.d) + '</td>' +
             '<td><b class="pos">' + taka(p.a) + '</b></td>' +
-            '<td>' +
-              '<button class="btn sm g" onclick="okPay(' + p.id + ')">গ্রহণ</button> ' +
-              '<button class="btn sm danger" onclick="noPay(' + p.id + ')">বাতিল</button>' +
-            '</td>' +
+            '<td>' + statusBadge + ' ' + actions + '</td>' +
           '</tr>';
         }).join("") +
       '</table></div>' :
-      '<p style="color:var(--mut);margin:0;">বর্তমানে কোনো নতুন অনুদানের রিকোয়েস্ট পেন্ডিং নেই।</p>'
+      '<p style="color:var(--mut);margin:0;padding:12px 0;">বর্তমানে কোনো অনুদানের রেকর্ড নেই।</p>'
     ) +
   '</div>' +
 
@@ -3061,16 +3410,70 @@ function adm() {
   '</div>' +
 
   '<div class="two">' +
-    /* Donation Payment Accounts Setup */
+    /* Automated Payment Gateway & Account Setup */
     '<div class="box">' +
-      '<h3 style="margin:0 0 10px;font-size:1.2rem;">পেমেন্ট রিসিভিং নম্বর কনফিগার</h3>' +
-      '<p style="color:var(--mut);font-size:0.85rem;margin:0 0 14px;">এখানে নম্বর বসালে তা "অনুদান দিন" পেজে সব দাতা দেখতে পাবেন।</p>' +
+      '<h3 style="margin:0 0 6px;font-size:1.25rem;color:var(--primary-light);">⚡ অটোমেটিক পেমেন্ট গেটওয়ে সেটিংস</h3>' +
+      '<p style="color:var(--mut);font-size:0.85rem;margin:0 0 16px;">বিকাশ, নগদ, রকেট ও ব্যাংক কার্ডের অটোমেটেড ইন্টিগ্রেশন কনফিগার করুন।</p>' +
       '<div class="form-grid">' +
-        '<div class="form-group"><label>বিকাশ নম্বর (bKash)</label><input id="ab" value="' + esc(A.b || "") + '" placeholder="017xxxxxxxx"></div>' +
-        '<div class="form-group"><label>রকেট নম্বর (Rocket)</label><input id="ar" value="' + esc(A.r || "") + '" placeholder="017xxxxxxxx-x"></div>' +
-        '<div class="form-group"><label>নগদ নম্বর (Nagad)</label><input id="an" value="' + esc(A.n || "") + '" placeholder="017xxxxxxxx"></div>' +
-        '<div class="form-group"><label>ব্যাংক অ্যাকাউন্ট বিস্তারিত</label><textarea id="ak" placeholder="ব্যাংকের নাম, শাখা, হিসাবের নাম ও নম্বর">' + esc(A.k || "") + '</textarea></div>' +
-        '<button class="btn g" onclick="setAcc()">সংরক্ষণ করুন</button>' +
+        '<div style="background:var(--primary-subtle);border:1px solid var(--primary);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+          '<div>' +
+            '<b style="color:var(--ink-head);font-size:0.95rem;">স্বয়ংক্রিয় অনলাইন পেমেন্ট চালু রাখুন</b>' +
+            '<div style="font-size:0.78rem;color:var(--mut);">অন থাকলে দাতা সরাসরি অটোমেটিক পেমেন্ট করতে পারবেন</div>' +
+          '</div>' +
+          '<input type="checkbox" id="cfg_auto_gw"' + (A.auto_gateway_enabled !== false ? ' checked' : '') + ' style="width:20px;height:20px;cursor:pointer;">' +
+        '</div>' +
+
+        '<div class="form-row">' +
+          '<div class="form-group">' +
+            '<label>গেটওয়ে মোড (Gateway Mode)</label>' +
+            '<select id="cfg_gw_mode">' +
+              '<option value="sandbox"' + (A.gateway_mode === 'sandbox' ? ' selected' : '') + '>স্যান্ডবক্স / টেস্ট মোড (স্মার্ট অটো চেকআউট)</option>' +
+              '<option value="live"' + (A.gateway_mode === 'live' ? ' selected' : '') + '>লাইভ প্রোডাকশন গেটওয়ে (Real Gateway)</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label>পেমেন্ট প্রোভাইডার (Provider)</label>' +
+            '<select id="cfg_gw_prov">' +
+              '<option value="auto"' + (A.gateway_provider === 'auto' ? ' selected' : '') + '>স্মার্ট অটো গেটওয়ে (Default)</option>' +
+              '<option value="sslcommerz"' + (A.gateway_provider === 'sslcommerz' ? ' selected' : '') + '>SSLCommerz (বিকাশ, নগদ, রকেট, কার্ড ও সব ব্যাংক)</option>' +
+              '<option value="bkash"' + (A.gateway_provider === 'bkash' ? ' selected' : '') + '>bKash Direct PGW (মার্চেন্ট টোকেনাইজড)</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:14px;margin-top:4px;">' +
+          '<div style="font-weight:700;font-size:0.9rem;color:var(--primary-light);margin-bottom:8px;">SSLCommerz ক্রেডেনশিয়াল (ঐচ্ছিক / লাইভ মোডের জন্য)</div>' +
+          '<div class="form-row">' +
+            '<div class="form-group"><label>Store ID</label><input id="cfg_ssl_id" value="' + esc(A.sslcz_store_id || "") + '" placeholder="e.g. samaj_live"></div>' +
+            '<div class="form-group"><label>Store Password</label><input id="cfg_ssl_pass" type="password" value="' + esc(A.sslcz_store_passwd || "") + '" placeholder="••••••••"></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:14px;margin-top:4px;">' +
+          '<div style="font-weight:700;font-size:0.9rem;color:#e2136e;margin-bottom:8px;">bKash Direct PGW ক্রেডেনশিয়াল (ঐচ্ছিক)</div>' +
+          '<div class="form-row">' +
+            '<div class="form-group"><label>App Key</label><input id="cfg_bkash_key" value="' + esc(A.bkash_app_key || "") + '" placeholder="bKash App Key"></div>' +
+            '<div class="form-group"><label>App Secret</label><input id="cfg_bkash_secret" type="password" value="' + esc(A.bkash_app_secret || "") + '" placeholder="••••••••"></div>' +
+          '</div>' +
+          '<div class="form-row" style="margin-top:8px;">' +
+            '<div class="form-group"><label>Username</label><input id="cfg_bkash_user" value="' + esc(A.bkash_username || "") + '" placeholder="bKash Merchant Username"></div>' +
+            '<div class="form-group"><label>Password</label><input id="cfg_bkash_pass" type="password" value="' + esc(A.bkash_password || "") + '" placeholder="••••••••"></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="background:var(--sf-glass);border:1px solid var(--ln-subtle);border-radius:var(--radius-sm);padding:14px;margin-top:4px;">' +
+          '<div style="font-weight:700;font-size:0.9rem;color:var(--ink-head);margin-bottom:8px;">অফিসিয়াল পেমেন্ট নম্বরসমূহ (বিকাশ, রকেট, নগদ, ব্যাংক)</div>' +
+          '<div class="form-row">' +
+            '<div class="form-group"><label>বিকাশ নম্বর (bKash)</label><input id="ab" value="' + esc(A.b || "") + '" placeholder="017xxxxxxxx"></div>' +
+            '<div class="form-group"><label>রকেট নম্বর (Rocket)</label><input id="ar" value="' + esc(A.r || "") + '" placeholder="017xxxxxxxx-x"></div>' +
+          '</div>' +
+          '<div class="form-row" style="margin-top:8px;">' +
+            '<div class="form-group"><label>নগদ নম্বর (Nagad)</label><input id="an" value="' + esc(A.n || "") + '" placeholder="017xxxxxxxx"></div>' +
+            '<div class="form-group"><label>ব্যাংক অ্যাকাউন্ট বিস্তারিত</label><input id="ak" value="' + esc(A.k || "") + '" placeholder="ব্যাংকের নাম, শাখা, হিসাব নম্বর"></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<button class="gw-btn-main" onclick="setAcc()">💾 গেটওয়ে সেটিংস সংরক্ষণ করুন</button>' +
       '</div>' +
     '</div>' +
 
@@ -3197,6 +3600,31 @@ ADMIN = !!TOKEN;
 if (S.tab === "adm" && !ADMIN) S.tab = "dash";
 draw();
 reload();
+
+// Check external gateway redirect params
+try {
+  var urlParams = new URLSearchParams(window.location.search || (window.location.hash.indexOf("?") >= 0 ? window.location.hash.split("?")[1] : ""));
+  var pStatus = urlParams.get("status") || urlParams.get("paid");
+  var pTrx = urlParams.get("trx_id") || urlParams.get("val_id");
+  var pTran = urlParams.get("tran_id");
+  var pAmt = urlParams.get("amount");
+  if (pStatus === "success" && (pTrx || pTran)) {
+    setTimeout(function() {
+      showDonationReceipt({
+        name: "শ্রদ্ধেয় দাতা",
+        method: "অনলাইন গেটওয়ে",
+        trx_id: pTrx || pTran,
+        tran_id: pTran,
+        amount: pAmt || 1000,
+        paid_at: new Date().toLocaleString("bn-BD")
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 600);
+  } else if (pStatus === "fail" || pStatus === "cancel") {
+    alert("অনলাইন পেমেন্ট প্রক্রিয়াটি বাতিল বা ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।");
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+} catch(e){}
 </script>
 </body>
 </html>

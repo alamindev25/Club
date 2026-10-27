@@ -14,9 +14,12 @@
 |---|---|
 | GET `/api/summary/` | সবাই: মোট আয়, ব্যয়, কর্মসূচিভিত্তিক খরচ (দাতার তথ্য নেই) |
 | GET `/api/members/ goals/ events/ settings/` | সবাই (সদস্যের ফোন শুধু অ্যাডমিনকে) |
-| POST `/api/payments/` | সবাই: অনুদানের তথ্য জমা (pending), রেট লিমিট ২০/ঘণ্টা |
+| POST `/api/payments/initiate/` | সবাই: স্বয়ংক্রিয় অনলাইন পেমেন্ট সেশন শুরু (SSLCommerz / অটো স্মার্ট গেটওয়ে) |
+| POST `/api/payments/verify/` | সবাই / গেটওয়ে: পেমেন্ট সম্পন্ন করে স্বয়ংক্রিয়ভাবে তহবিলে জমা (নো ম্যানুয়াল অনুমোদন) |
+| POST/GET `/api/payments/gateway-return/` | বহিরাগত গেটওয়ে রিটার্ন ও রিডাইরেক্ট হ্যান্ডলার |
+| POST `/api/payments/ipn/` | গেটওয়ে সার্ভার-টু-সার্ভার আইপিএন নোটিফিকেশন |
 | POST `/api/login/` | অ্যাডমিন (staff) টোকেন পায় |
-| `/api/members/ goals/ events/` লেখা, PUT `/api/settings/` | শুধু অ্যাডমিন |
+| `/api/members/ goals/ events/` লেখা, PUT `/api/settings/` | শুধু অ্যাডমিন: সদস্য, ইভেন্ট ও সম্পূর্ণ গেটওয়ে কনফিগারেশন |
 | `/api/admin/transactions/` | শুধু অ্যাডমিন: দাতার নাম, পেশা, ফোন, মাধ্যম, সময় |
 | GET `/api/admin/payments/`, POST `.../{id}/approve/` `.../{id}/reject/` | শুধু অ্যাডমিন |
 

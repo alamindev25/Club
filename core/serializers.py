@@ -58,20 +58,32 @@ class TransactionSerializer(serializers.ModelSerializer):
 class PaymentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ["name", "profession", "phone", "method", "trx_id", "amount", "note"]
+        fields = [
+            "id", "tran_id", "name", "profession", "phone", "method",
+            "trx_id", "amount", "note", "status", "gateway_provider"
+        ]
+        read_only_fields = ["id", "tran_id", "status"]
 
 
 class PaymentAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ["id", "name", "profession", "phone", "method", "trx_id",
-                  "amount", "note", "status", "created_at"]
+        fields = [
+            "id", "tran_id", "name", "profession", "phone", "method", "trx_id",
+            "amount", "note", "status", "gateway_provider", "bank_tran_id",
+            "card_type", "created_at"
+        ]
 
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentAccount
-        fields = ["bkash", "rocket", "nagad", "bank"]
+        fields = [
+            "bkash", "rocket", "nagad", "bank",
+            "auto_gateway_enabled", "gateway_mode", "gateway_provider",
+            "sslcz_store_id", "sslcz_store_passwd",
+            "bkash_app_key", "bkash_app_secret", "bkash_username", "bkash_password"
+        ]
 
 
 class BlogPostSerializer(serializers.ModelSerializer):

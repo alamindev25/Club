@@ -59,3 +59,19 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = os.environ.get("SSL_REDIRECT", "1") == "1"
     SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# ==============================================================
+# SSLCOMMERZ PAYMENT GATEWAY CONFIGURATION
+# ==============================================================
+# লাইভ বা স্যান্ডবক্স ক্রেডেনশিয়াল এখানে অথবা environment variable-এ বসাবেন:
+SSLCZ_STORE_ID = os.environ.get("SSLCZ_STORE_ID", "")
+SSLCZ_STORE_PASSWD = os.environ.get("SSLCZ_STORE_PASSWD", "")
+SSLCZ_IS_SANDBOX = os.environ.get("SSLCZ_IS_SANDBOX", "1") == "1"  # True হলে টেস্ট/স্যান্ডবক্স, False হলে লাইভ
+
+# SSLCommerz API Endpoints
+if SSLCZ_IS_SANDBOX:
+    SSLCZ_SESSION_API = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
+    SSLCZ_VALIDATION_API = "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
+else:
+    SSLCZ_SESSION_API = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
+    SSLCZ_VALIDATION_API = "https://securepay.sslcommerz.com/validator/api/validationserverAPI.php"
