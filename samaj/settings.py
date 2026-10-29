@@ -14,6 +14,7 @@ CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").sp
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 CSRF_TRUSTED_ORIGINS.append("https://*.onrender.com")
+CSRF_TRUSTED_ORIGINS.append("https://*.sslcommerz.com")
 
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",

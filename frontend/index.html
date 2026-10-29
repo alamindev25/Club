@@ -1183,38 +1183,204 @@ footer {
 }
 .gw-methods-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin: 14px 0 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 16px 0 16px;
+}
+@media (max-width: 900px) {
+  .gw-methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .gw-methods-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .gw-card {
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: var(--sf-glass);
-  border: 2px solid var(--ln-subtle);
+  position: relative;
+  padding: 22px 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.65) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1.5px solid rgba(148, 163, 184, 0.16);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  transition: all 0.25s;
+  gap: 12px;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  user-select: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 .gw-card:hover {
-  border-color: var(--primary);
-  background: var(--sf-card-hover);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: rgba(148, 163, 184, 0.38);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.45);
 }
-.gw-card.active {
-  border-color: var(--primary);
-  background: var(--primary-subtle);
-  box-shadow: 0 6px 18px var(--primary-glow);
+.gw-card:hover .gw-logo-wrap {
+  transform: scale(1.08);
 }
-.gw-badge {
+.gw-card .gw-radio {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  background: rgba(15, 23, 42, 0.6);
+}
+.gw-card .gw-radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+.gw-card .gw-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+  transition: transform 0.25s ease;
+}
+.gw-card .gw-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.gw-card .gw-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #F8FAFC;
+  letter-spacing: -0.2px;
+}
+.gw-card .gw-subtitle {
+  font-size: 0.76rem;
+  color: #94A3B8;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.2px;
+}
+.gw-card .gw-badge {
   font-size: 0.72rem;
-  padding: 2px 8px;
+  font-weight: 700;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.2px;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+/* Brand-specific Active & Selected States */
+.gw-card.active.bkash {
+  border-color: #E2136E !important;
+  background: linear-gradient(180deg, rgba(226, 19, 110, 0.14) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  box-shadow: 0 0 0 1.5px #E2136E, 0 12px 30px rgba(226, 19, 110, 0.3) !important;
+}
+.gw-card.active.bkash .gw-radio {
+  border-color: #E2136E;
+  background: #E2136E;
+}
+.gw-card.active.bkash .gw-radio::after {
+  background: #FFF;
+}
+.gw-card.active.bkash .gw-badge {
+  background: rgba(226, 19, 110, 0.22) !important;
+  border-color: rgba(226, 19, 110, 0.45) !important;
+  color: #FF80AB !important;
+}
+
+.gw-card.active.rocket {
+  border-color: #A855F7 !important;
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.14) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  box-shadow: 0 0 0 1.5px #A855F7, 0 12px 30px rgba(168, 85, 247, 0.3) !important;
+}
+.gw-card.active.rocket .gw-radio {
+  border-color: #A855F7;
+  background: #A855F7;
+}
+.gw-card.active.rocket .gw-radio::after {
+  background: #FFF;
+}
+.gw-card.active.rocket .gw-badge {
+  background: rgba(168, 85, 247, 0.22) !important;
+  border-color: rgba(168, 85, 247, 0.45) !important;
+  color: #D8B4FE !important;
+}
+
+.gw-card.active.nagad {
+  border-color: #F97316 !important;
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.14) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  box-shadow: 0 0 0 1.5px #F97316, 0 12px 30px rgba(249, 115, 22, 0.3) !important;
+}
+.gw-card.active.nagad .gw-radio {
+  border-color: #F97316;
+  background: #F97316;
+}
+.gw-card.active.nagad .gw-radio::after {
+  background: #FFF;
+}
+.gw-card.active.nagad .gw-badge {
+  background: rgba(249, 115, 22, 0.22) !important;
+  border-color: rgba(249, 115, 22, 0.45) !important;
+  color: #FDBA74 !important;
+}
+
+.gw-card.active.bank {
+  border-color: #38BDF8 !important;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.14) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  box-shadow: 0 0 0 1.5px #38BDF8, 0 12px 30px rgba(56, 189, 248, 0.3) !important;
+}
+.gw-card.active.bank .gw-radio {
+  border-color: #38BDF8;
+  background: #38BDF8;
+}
+.gw-card.active.bank .gw-radio::after {
+  background: #FFF;
+}
+.gw-card.active.bank .gw-badge {
+  background: rgba(56, 189, 248, 0.22) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  color: #BAE6FD !important;
+}
+
+/* Trust Bar */
+.gw-trust-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  margin-top: 10px;
+}
+.gw-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+.gw-trust-item .trust-icon {
+  font-size: 1rem;
 }
 .gw-btn-main {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -2280,9 +2446,11 @@ function setAmount(amt) {
 
 function updatePayBtnText() {
   var amt = v("ya");
+  var m = pmSel();
   var btnEl = document.getElementById("payBtnLabel");
   if (btnEl) {
-    btnEl.textContent = amt && Number(amt) > 0 ? "⚡ ৳ " + bn(amt) + " সরাসরি অনলাইন পেমেন্ট করুন" : "⚡ সরাসরি অনলাইন পেমেন্ট করুন";
+    var amtStr = amt && Number(amt) > 0 ? "৳ " + bn(amt) : "";
+    btnEl.textContent = amtStr ? "⚡ " + m + " দিয়ে অনুদান দিন — " + amtStr : "⚡ " + m + " দিয়ে সরাসরি অনলাইন পেমেন্ট করুন";
   }
 }
 
@@ -2291,11 +2459,44 @@ function pay() {
   var m = pmSel();
   var curAmt = v("ya") || "1000";
 
+  var BKASH_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#E2136E"/><path d="M28.4 11.2L18.8 24.5L34.1 23.3L28.4 11.2Z" fill="#FFFFFF"/><path d="M18.8 24.5L12 18.2L16.2 30.6L18.8 24.5Z" fill="#F8BBD0"/><path d="M18.8 24.5L16.2 30.6L29.5 36.8L34.1 23.3L18.8 24.5Z" fill="#FFFFFF"/><path d="M34.1 23.3L37.5 17.5L28.4 11.2L34.1 23.3Z" fill="#FCE4EC"/></svg>';
+  var ROCKET_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="rocketGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#9C27B0"/><stop offset="100%" stop-color="#6A1B9A"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#rocketGrad)"/><path d="M32.5 13.5C32.5 13.5 26.2 15 21.5 19.8C17.2 24 15.8 28.2 15.8 28.2L19.8 32.2C19.8 32.2 24 30.8 28.2 26.5C33 21.8 34.5 15.5 34.5 15.5L32.5 13.5Z" fill="#FFFFFF"/><circle cx="26" cy="22" r="2.5" fill="#6A1B9A"/><path d="M18.5 29.5L13.5 30.5L16.8 35.2L18.5 29.5Z" fill="#FFC107"/><path d="M29.5 18.5L30.5 13.5L35.2 16.8L29.5 18.5Z" fill="#E91E63"/><path d="M14.5 33.5L10.5 37.5L14.2 36.5L15.5 40.5L17.5 36.5L14.5 33.5Z" fill="#FF9800"/></svg>';
+  var NAGAD_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="nagadGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F7941D"/><stop offset="100%" stop-color="#ED1C24"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#nagadGrad)"/><path d="M24 10C24 10 16.5 19.5 16.5 25.8C16.5 29.9 19.8 33.2 24 33.2C28.2 33.2 31.5 29.9 31.5 25.8C31.5 19.5 24 10 24 10Z" fill="#FFFFFF"/><path d="M24 17.5C24 17.5 19.5 23 19.5 27C19.5 29.5 21.5 31.5 24 31.5C26.5 31.5 28.5 29.5 28.5 27C28.5 23 24 17.5 24 17.5Z" fill="#FEE082"/><path d="M22 28C22 28 24 23.5 24 21.5C24.8 23 26 25.5 26 27.2C26 28.3 25.1 29.2 24 29.2C22.9 29.2 22 28.3 22 28Z" fill="#E65100"/></svg>';
+  var BANK_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cardGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0284C7"/><stop offset="100%" stop-color="#0F172A"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#cardGrad)"/><rect x="9" y="14" width="30" height="20" rx="3.5" fill="#1E293B" stroke="#38BDF8" stroke-width="1.2"/><rect x="9" y="18" width="30" height="4" fill="#38BDF8" fill-opacity="0.3"/><circle cx="21" cy="27" r="3.2" fill="#EF4444"/><circle cx="27" cy="27" r="3.2" fill="#F59E0B" fill-opacity="0.88"/><rect x="12" y="25" width="4" height="2.5" rx="0.5" fill="#FDE047"/></svg>';
+
   var methodBadges = {
-    "বিকাশ": { color: "#e2136e", bg: "rgba(226,19,110,0.14)", icon: "🌸", note: "বিকাশ অটো চেকআউট" },
-    "নগদ (Nagad)": { color: "#f7941d", bg: "rgba(247,148,29,0.14)", icon: "⚡", note: "নগদ অটো পেমেন্ট" },
-    "রকেট": { color: "#8c3494", bg: "rgba(140,52,148,0.14)", icon: "🚀", note: "রকেট অনলাইন গেটওয়ে" },
-    "ব্যাংক ট্রান্সফার": { color: "#0284c7", bg: "rgba(2,132,199,0.14)", icon: "💳", note: "কার্ড ও ইন্টারনেট ব্যাংকিং" }
+    "বিকাশ": {
+      cls: "bkash",
+      color: "#E2136E",
+      bg: "rgba(226, 19, 110, 0.16)",
+      sub: "bKash Online Checkout",
+      badge: "⚡ ইনস্ট্যান্ট অটো পে",
+      svg: BKASH_SVG
+    },
+    "রকেট": {
+      cls: "rocket",
+      color: "#A855F7",
+      bg: "rgba(168, 85, 247, 0.16)",
+      sub: "DBBL Rocket Gateway",
+      badge: "⚡ ডাচ-বাংলা ব্যাংক",
+      svg: ROCKET_SVG
+    },
+    "নগদ (Nagad)": {
+      cls: "nagad",
+      color: "#F97316",
+      bg: "rgba(249, 115, 22, 0.16)",
+      sub: "Nagad Instant Checkout",
+      badge: "⚡ ডাক বিভাগ ওয়ালেট",
+      svg: NAGAD_SVG
+    },
+    "ব্যাংক ট্রান্সফার": {
+      cls: "bank",
+      color: "#38BDF8",
+      bg: "rgba(56, 189, 248, 0.16)",
+      sub: "Cards & Net Banking",
+      badge: "⚡ ভিসা, কার্ড ও ব্যাংক",
+      svg: BANK_SVG
+    }
   };
 
   return '<div class="member-header-bar">' +
@@ -2323,18 +2524,34 @@ function pay() {
   '</div>' +
 
   '<div class="box" style="margin-bottom:24px;">' +
-    '<h3 style="margin:0 0 6px;font-size:1.25rem;">২. স্বয়ংক্রিয় পেমেন্টের মাধ্যম বেছে নিন</h3>' +
-    '<p style="color:var(--mut);font-size:0.88rem;margin:0 0 14px;">পেমেন্ট সফল হওয়ামাত্রই স্বয়ংক্রিয়ভাবে সংগঠনের ফান্ডে যুক্ত হবে এবং তাৎক্ষণিক অনলাইন মানি রিসিপ্ট পাবেন।</p>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px;">' +
+      '<h3 style="margin:0;font-size:1.25rem;display:flex;align-items:center;gap:10px;">' +
+        '<span style="background:var(--primary);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;">২</span>' +
+        'স্বয়ংক্রিয় পেমেন্টের মাধ্যম বেছে নিন' +
+      '</h3>' +
+      '<span class="chip" style="background:rgba(16,185,129,0.14);color:var(--ac);font-size:0.8rem;font-weight:700;padding:4px 12px;border:1px solid rgba(16,185,129,0.3);">⚡ ইনস্ট্যান্ট অটো-ভেরিফায়েড</span>' +
+    '</div>' +
+    '<p style="color:var(--mut);font-size:0.88rem;margin:0 0 16px;">পেমেন্ট সফল হওয়ামাত্রই স্বয়ংক্রিয়ভাবে সংগঠনের ফান্ডে যুক্ত হবে এবং তাৎক্ষণিক অনলাইন মানি রিসিপ্ট পাবেন।</p>' +
     '<div class="gw-methods-grid">' +
       METH.map(function(name){
         var isAct = pmSel() === name;
-        var info = methodBadges[name] || { color: "var(--primary)", bg: "var(--primary-subtle)", icon: "💳", note: "ডিজিটাল গেটওয়ে" };
-        return '<div class="gw-card ' + (isAct ? 'active' : '') + '" onclick="setPm(\'' + name + '\')">' +
-          '<div style="font-size:1.6rem;color:' + info.color + ';">' + info.icon + '</div>' +
-          '<b style="font-size:1.05rem;color:var(--ink-head);">' + name + '</b>' +
-          '<span class="gw-badge" style="background:' + info.bg + ';color:' + info.color + ';">' + info.note + '</span>' +
+        var info = methodBadges[name] || { cls: "bank", color: "var(--primary)", bg: "var(--primary-subtle)", sub: "Online Gateway", badge: "ডিজিটাল গেটওয়ে", svg: BANK_SVG };
+        return '<div class="gw-card ' + info.cls + (isAct ? ' active' : '') + '" onclick="setPm(\'' + name + '\')">' +
+          '<div class="gw-radio"></div>' +
+          '<div class="gw-logo-wrap">' + info.svg + '</div>' +
+          '<div class="gw-title-group">' +
+            '<span class="gw-title">' + name + '</span>' +
+            '<span class="gw-subtitle">' + info.sub + '</span>' +
+          '</div>' +
+          '<span class="gw-badge" style="background:' + info.bg + ';color:' + info.color + ';">' + info.badge + '</span>' +
         '</div>';
       }).join("") +
+    '</div>' +
+    '<div class="gw-trust-bar">' +
+      '<div class="gw-trust-item"><span class="trust-icon">🔒</span> <span>256-Bit SSL এনক্রিপ্টেড ও সম্পূর্ণ নিরাপদ</span></div>' +
+      '<div class="gw-trust-item"><span class="trust-icon">⚡</span> <span>রিয়েল-টাইম অটো ক্রেডিট (নো ম্যানুয়াল অনুমোদন)</span></div>' +
+      '<div class="gw-trust-item"><span class="trust-icon">🧾</span> <span>স্বয়ংক্রিয় প্রিন্টযোগ্য ডিজিটাল রিসিট</span></div>' +
+      '<div class="gw-trust-item"><span class="trust-icon">🏛️</span> <span>বাংলাদেশ ব্যাংক অনুমোদিত গেটওয়ে</span></div>' +
     '</div>' +
   '</div>' +
 
@@ -2409,34 +2626,39 @@ function startAutoPay() {
 }
 
 function openGatewaySimulatorModal(res) {
+  var BKASH_SVG_M = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="12" fill="#E2136E"/><path d="M28.4 11.2L18.8 24.5L34.1 23.3L28.4 11.2Z" fill="#FFFFFF"/><path d="M18.8 24.5L12 18.2L16.2 30.6L18.8 24.5Z" fill="#F8BBD0"/><path d="M18.8 24.5L16.2 30.6L29.5 36.8L34.1 23.3L18.8 24.5Z" fill="#FFFFFF"/><path d="M34.1 23.3L37.5 17.5L28.4 11.2L34.1 23.3Z" fill="#FCE4EC"/></svg>';
+  var ROCKET_SVG_M = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="rocketGradM" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#9C27B0"/><stop offset="100%" stop-color="#6A1B9A"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#rocketGradM)"/><path d="M32.5 13.5C32.5 13.5 26.2 15 21.5 19.8C17.2 24 15.8 28.2 15.8 28.2L19.8 32.2C19.8 32.2 24 30.8 28.2 26.5C33 21.8 34.5 15.5 34.5 15.5L32.5 13.5Z" fill="#FFFFFF"/><circle cx="26" cy="22" r="2.5" fill="#6A1B9A"/><path d="M18.5 29.5L13.5 30.5L16.8 35.2L18.5 29.5Z" fill="#FFC107"/><path d="M29.5 18.5L30.5 13.5L35.2 16.8L29.5 18.5Z" fill="#E91E63"/><path d="M14.5 33.5L10.5 37.5L14.2 36.5L15.5 40.5L17.5 36.5L14.5 33.5Z" fill="#FF9800"/></svg>';
+  var NAGAD_SVG_M = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="nagadGradM" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F7941D"/><stop offset="100%" stop-color="#ED1C24"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#nagadGradM)"/><path d="M24 10C24 10 16.5 19.5 16.5 25.8C16.5 29.9 19.8 33.2 24 33.2C28.2 33.2 31.5 29.9 31.5 25.8C31.5 19.5 24 10 24 10Z" fill="#FFFFFF"/><path d="M24 17.5C24 17.5 19.5 23 19.5 27C19.5 29.5 21.5 31.5 24 31.5C26.5 31.5 28.5 29.5 28.5 27C28.5 23 24 17.5 24 17.5Z" fill="#FEE082"/><path d="M22 28C22 28 24 23.5 24 21.5C24.8 23 26 25.5 26 27.2C26 28.3 25.1 29.2 24 29.2C22.9 29.2 22 28.3 22 28Z" fill="#E65100"/></svg>';
+  var BANK_SVG_M = '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cardGradM" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0284C7"/><stop offset="100%" stop-color="#0F172A"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#cardGradM)"/><rect x="9" y="14" width="30" height="20" rx="3.5" fill="#1E293B" stroke="#38BDF8" stroke-width="1.2"/><rect x="9" y="18" width="30" height="4" fill="#38BDF8" fill-opacity="0.3"/><circle cx="21" cy="27" r="3.2" fill="#EF4444"/><circle cx="27" cy="27" r="3.2" fill="#F59E0B" fill-opacity="0.88"/><rect x="12" y="25" width="4" height="2.5" rx="0.5" fill="#FDE047"/></svg>';
+
   var brandColor = "#3b82f6";
-  var brandLogo = "💳";
+  var brandLogoSvg = BANK_SVG_M;
   var providerTitle = res.method || "বিকাশ";
   if (res.method.indexOf("বিকাশ") >= 0) {
     brandColor = "#e2136e";
-    brandLogo = "🌸";
-    providerTitle = "bKash Payment Gateway";
+    brandLogoSvg = BKASH_SVG_M;
+    providerTitle = "bKash Online Payment";
   } else if (res.method.indexOf("নগদ") >= 0) {
-    brandColor = "#f7941d";
-    brandLogo = "⚡";
-    providerTitle = "Nagad Payment Gateway";
+    brandColor = "#f97316";
+    brandLogoSvg = NAGAD_SVG_M;
+    providerTitle = "Nagad Online Payment";
   } else if (res.method.indexOf("রকেট") >= 0) {
     brandColor = "#8c3494";
-    brandLogo = "🚀";
-    providerTitle = "Rocket Gateway";
+    brandLogoSvg = ROCKET_SVG_M;
+    providerTitle = "DBBL Rocket Gateway";
   } else {
     brandColor = "#0284c7";
-    brandLogo = "🏦";
+    brandLogoSvg = BANK_SVG_M;
     providerTitle = "Bank Cards & Internet Banking";
   }
 
   document.getElementById("md").innerHTML = 
     '<div class="ov" onclick="if(event.target===this)cls()">' +
-      '<div class="modal-box" style="max-width:440px;padding:0;overflow:hidden;border:2px solid ' + brandColor + ';box-shadow:0 15px 40px rgba(0,0,0,0.6);">' +
-        '<div style="background:' + brandColor + ';padding:20px;color:#fff;text-align:center;">' +
-          '<div style="font-size:2.2rem;margin-bottom:4px;">' + brandLogo + '</div>' +
-          '<h3 style="margin:0;font-size:1.35rem;letter-spacing:0.5px;">' + providerTitle + '</h3>' +
-          '<div style="font-size:0.85rem;opacity:0.9;margin-top:2px;">সমাজ কল্যাণ সংস্থা · মার্চেন্ট অনুদান পোর্টাল</div>' +
+      '<div class="modal-box" style="max-width:440px;padding:0;overflow:hidden;border:2px solid ' + brandColor + ';box-shadow:0 20px 50px rgba(0,0,0,0.65);">' +
+        '<div style="background:' + brandColor + ';padding:22px 20px;color:#fff;text-align:center;">' +
+          '<div style="display:flex;justify-content:center;margin-bottom:10px;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35));">' + brandLogoSvg + '</div>' +
+          '<h3 style="margin:0;font-size:1.3rem;letter-spacing:0.3px;color:#fff;">' + providerTitle + '</h3>' +
+          '<div style="font-size:0.84rem;opacity:0.92;margin-top:4px;">সমাজ কল্যাণ সংস্থা · মার্চেন্ট অনুদান পোর্টাল</div>' +
         '</div>' +
         '<div style="padding:24px 22px;">' +
           '<div style="background:var(--sf-glass);border:1px solid var(--ln);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;">' +
@@ -3608,11 +3830,13 @@ try {
   var pTrx = urlParams.get("trx_id") || urlParams.get("val_id");
   var pTran = urlParams.get("tran_id");
   var pAmt = urlParams.get("amount");
+  var pName = urlParams.get("name");
+  var pMethod = urlParams.get("method");
   if (pStatus === "success" && (pTrx || pTran)) {
     setTimeout(function() {
       showDonationReceipt({
-        name: "শ্রদ্ধেয় দাতা",
-        method: "অনলাইন গেটওয়ে",
+        name: pName ? decodeURIComponent(pName) : "শ্রদ্ধেয় দাতা",
+        method: pMethod ? decodeURIComponent(pMethod) : "অনলাইন গেটওয়ে",
         trx_id: pTrx || pTran,
         tran_id: pTran,
         amount: pAmt || 1000,

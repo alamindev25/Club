@@ -1,4 +1,6 @@
 import json
+import logging
+import urllib.parse
 import uuid
 from decimal import Decimal
 import requests
@@ -21,6 +23,9 @@ from rest_framework.views import APIView
 
 from . import serializers as S
 from .models import Event, Goal, Member, Payment, PaymentAccount, Transaction, BlogPost, Alumni
+from .sslcommerz import SSLCommerzService
+
+logger = logging.getLogger(__name__)
 
 
 def generate_tran_id():
@@ -136,46 +141,22 @@ class PaymentInitiateView(APIView):
             gateway_provider=acc.gateway_provider or "auto"
         )
 
-        # SSLCommerz ক্রেডেনশিয়াল (settings.py অথবা ডাটাবেস থেকে)
-        store_id = acc.sslcz_store_id or getattr(settings, "SSLCZ_STORE_ID", "")
-        store_passwd = acc.sslcz_store_passwd or getattr(settings, "SSLCZ_STORE_PASSWD", "")
-        is_live = (acc.gateway_mode == "live") if acc.sslcz_store_id else not getattr(settings, "SSLCZ_IS_SANDBOX", True)
-
-        if acc.auto_gateway_enabled and store_id and store_passwd:
-            gw_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php" if is_live else "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
-            base_url = request.build_absolute_uri("/").rstrip("/")
-            post_data = {
-                "store_id": store_id,
-                "store_passwd": store_passwd,
-                "total_amount": str(p.amount),
-                "currency": "BDT",
-                "tran_id": p.tran_id,
-                "success_url": f"{base_url}/api/payments/gateway-return/?status=success",
-                "fail_url": f"{base_url}/api/payments/gateway-return/?status=fail",
-                "cancel_url": f"{base_url}/api/payments/gateway-return/?status=cancel",
-                "ipn_url": f"{base_url}/api/payments/ipn/",
-                "cus_name": p.name,
-                "cus_email": "donor@samaj.org",
-                "cus_phone": p.phone or "01700000000",
-                "cus_add1": "Dhaka",
-                "cus_city": "Dhaka",
-                "cus_country": "Bangladesh",
-                "shipping_method": "NO",
-                "product_name": "Online Donation",
-                "product_category": "Donation",
-                "product_profile": "general"
-            }
-            try:
-                r = requests.post(gw_url, data=post_data, timeout=12)
-                data = r.json()
-                if data.get("status") == "SUCCESS" and data.get("GatewayPageURL"):
+        # SSLCommerz প্রফেশনাল গেটওয়ে ইন্টিগ্রেশন
+        sslcz = SSLCommerzService()
+        if acc.auto_gateway_enabled and sslcz.is_configured:
+            init_res = sslcz.initiate_transaction(p, request)
+            if init_res.get("success") and init_res.get("gateway_url"):
+                return Response({
+                    "mode": "live_gateway",
+                    "tran_id": p.tran_id,
+                    "gateway_url": init_res["gateway_url"]
+                })
+            else:
+                logger.warning("SSLCommerz initialization failed: %s", init_res.get("error"))
+                if not sslcz.is_sandbox:
                     return Response({
-                        "mode": "live_gateway",
-                        "tran_id": p.tran_id,
-                        "gateway_url": data["GatewayPageURL"]
-                    })
-            except Exception:
-                pass
+                        "detail": f"পেমেন্ট গেটওয়েতে সংযোগ করতে সমস্যা হয়েছে: {init_res.get('error')}"
+                    }, status=502)
 
         # অটোমেটিক ইন্টারেক্টিভ সিমুলেটর / স্মার্ট চেকআউট
         return Response({
@@ -221,6 +202,154 @@ class PaymentVerifyView(APIView):
             "method": p.method,
             "paid_at": p.created_at.strftime("%Y-%m-%d %I:%M %p")
         })
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class SSLCommerzSuccessView(APIView):
+    """
+    অফিসিয়াল SSLCommerz Success Callback.
+    Validation Server API দিয়ে ট্রানজেকশন ভেরিফাই করে এবং টাকার পরিমাণ মিলিয়ে তবেই চূড়ান্ত অনুমোদন দেওয়া হয়।
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        return self.handle_success(request)
+
+    def get(self, request):
+        return self.handle_success(request)
+
+    def handle_success(self, request):
+        data = request.POST if request.method == "POST" else request.GET
+        tran_id = data.get("tran_id") or request.GET.get("tran_id")
+        val_id = data.get("val_id")
+        amount = data.get("amount")
+        card_type = data.get("card_type")
+        bank_tran_id = data.get("bank_tran_id")
+
+        if not tran_id:
+            logger.error("SSLCommerz success callback without tran_id")
+            return HttpResponseRedirect("/#pay?status=fail&reason=missing_tran_id")
+
+        p = Payment.objects.filter(tran_id=tran_id).first()
+        if not p:
+            logger.error(f"Payment record not found for tran_id: {tran_id}")
+            return HttpResponseRedirect("/#pay?status=fail&reason=payment_not_found")
+
+        # Validation Server API-র মাধ্যমে ভেরিফিকেশন
+        sslcz = SSLCommerzService()
+        if val_id and sslcz.is_configured:
+            val_res = sslcz.validate_transaction(val_id)
+            if not val_res.get("is_valid"):
+                logger.error(f"SSLCommerz validation failed for val_id {val_id}: {val_res.get('error')}")
+                p.status = "failed"
+                p.ipn_data = json.dumps(val_res)
+                p.save(update_fields=["status", "ipn_data"])
+                return HttpResponseRedirect(f"/#pay?status=fail&reason=invalid_transaction&tran_id={tran_id}")
+
+            # টাকার পরিমাণ যাচাই (টাকা টেম্পারিং রোধ)
+            verified_amount = Decimal(str(val_res.get("amount") or amount or "0"))
+            if verified_amount < p.amount:
+                logger.error(f"Amount mismatch! Expected {p.amount}, verified: {verified_amount}")
+                p.status = "failed"
+                p.save(update_fields=["status"])
+                return HttpResponseRedirect(f"/#pay?status=fail&reason=amount_mismatch&tran_id={tran_id}")
+
+            bank_tran_id = val_res.get("bank_tran_id") or bank_tran_id
+            card_type = val_res.get("card_type") or card_type
+
+        completed_p, msg = complete_payment_auto(
+            tran_id=tran_id,
+            trx_id=bank_tran_id or val_id,
+            bank_tran_id=bank_tran_id,
+            card_type=card_type,
+            raw_data=dict(data)
+        )
+
+        if completed_p:
+            donor_name = urllib.parse.quote(completed_p.name or "শ্রদ্ধেয় দাতা")
+            method_name = urllib.parse.quote(completed_p.card_type or completed_p.method or "অনলাইন গেটওয়ে")
+            redirect_url = (
+                f"/?status=success"
+                f"&tran_id={completed_p.tran_id}"
+                f"&trx_id={completed_p.trx_id}"
+                f"&amount={completed_p.amount}"
+                f"&name={donor_name}"
+                f"&method={method_name}#pay"
+            )
+            return HttpResponseRedirect(redirect_url)
+
+        return HttpResponseRedirect("/#pay?status=fail")
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class SSLCommerzFailView(APIView):
+    """SSLCommerz Fail Callback"""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        return self.handle_fail(request)
+
+    def get(self, request):
+        return self.handle_fail(request)
+
+    def handle_fail(self, request):
+        data = request.POST if request.method == "POST" else request.GET
+        tran_id = data.get("tran_id") or request.GET.get("tran_id")
+        if tran_id:
+            Payment.objects.filter(tran_id=tran_id).update(status="failed", ipn_data=json.dumps(dict(data)))
+        return HttpResponseRedirect(f"/#pay?status=fail&tran_id={tran_id or ''}")
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class SSLCommerzCancelView(APIView):
+    """SSLCommerz Cancel Callback"""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        return self.handle_cancel(request)
+
+    def get(self, request):
+        return self.handle_cancel(request)
+
+    def handle_cancel(self, request):
+        data = request.POST if request.method == "POST" else request.GET
+        tran_id = data.get("tran_id") or request.GET.get("tran_id")
+        if tran_id:
+            Payment.objects.filter(tran_id=tran_id).update(status="cancelled", ipn_data=json.dumps(dict(data)))
+        return HttpResponseRedirect(f"/#pay?status=cancel&tran_id={tran_id or ''}")
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class SSLCommerzIPNView(APIView):
+    """SSLCommerz Instant Payment Notification (IPN) Webhook"""
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        data = request.data or request.POST
+        tran_id = data.get("tran_id")
+        val_id = data.get("val_id")
+
+        if not tran_id or not val_id:
+            return Response({"detail": "Missing tran_id or val_id"}, status=400)
+
+        sslcz = SSLCommerzService()
+        if sslcz.is_configured:
+            val_res = sslcz.validate_transaction(val_id)
+            if val_res.get("is_valid"):
+                complete_payment_auto(
+                    tran_id=tran_id,
+                    trx_id=val_res.get("bank_tran_id") or val_id,
+                    bank_tran_id=val_res.get("bank_tran_id"),
+                    card_type=val_res.get("card_type"),
+                    raw_data=dict(data)
+                )
+                return Response({"status": "IPN Validated and Processed"})
+
+        return Response({"status": "IPN Received"})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

@@ -15,8 +15,15 @@ urlpatterns = [
     path("login/", v.LoginView.as_view()),
     path("summary/", v.SummaryView.as_view()),
     path("settings/", v.SettingsView.as_view()),
-    path("payments/initiate/", v.PaymentInitiateView.as_view()),
-    path("payments/verify/", v.PaymentVerifyView.as_view()),
+    # Automated Payment Endpoints
+    path("payments/initiate/", v.PaymentInitiateView.as_view(), name="payment-initiate"),
+    path("payments/verify/", v.PaymentVerifyView.as_view(), name="payment-verify"),
+    # Official SSLCommerz Callback Endpoints
+    path("payments/sslcommerz/success/", v.SSLCommerzSuccessView.as_view(), name="sslcz-success"),
+    path("payments/sslcommerz/fail/", v.SSLCommerzFailView.as_view(), name="sslcz-fail"),
+    path("payments/sslcommerz/cancel/", v.SSLCommerzCancelView.as_view(), name="sslcz-cancel"),
+    path("payments/sslcommerz/ipn/", v.SSLCommerzIPNView.as_view(), name="sslcz-ipn"),
+    # Legacy Gateway Return Fallbacks
     path("payments/gateway-return/", v.GatewayReturnView.as_view()),
     path("payments/ipn/", v.PaymentIPNView.as_view()),
     path("payments/", v.PaymentCreate.as_view()),
